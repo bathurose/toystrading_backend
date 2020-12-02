@@ -1,0 +1,9 @@
+exports.User = require('./User');
+exports.Device = require('./Device');
+exports.Category = require('./Category');
+exports.Tag = require('./Tag');
+exports.Asset = require('./Asset');
+exports.Tag_Toy = require('./Tag_Toy');
+exports.Toy = require('./Toy');
+exports.Transaction = require('./Transaction');
+exports.Trans_Rate = require('./Trans_Rate');

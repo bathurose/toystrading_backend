@@ -36,6 +36,18 @@ module.exports = {
         
         
     },
+    change_pw: function (req, res) {
+        let id = req.params.id  || '';
+        let data = req.body || '';
+        UserManager.change_pw(id,data, function (errorCode, errorMessage, httpCode, errorDescription, result) {
+            if (errorCode) {
+                return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
+            }
+            return Rest.sendSuccessOne(res, result, httpCode);
+        })
+        
+        
+    },
 
     getOne: function (req, res) {
         let accessUserId = req.query.accessUserId || '';
@@ -160,6 +172,19 @@ module.exports = {
                     return Rest.sendSuccessToken(res, token, result);
                 }
             });
+        });
+    },
+
+    forget_pw: function (req, res) {
+        let email = req.body.email || '';
+        UserManager.forget_pw(email,  function (errorCode, errorMessage, httpCode, errorDescription, result) {
+            if ( errorCode ) {
+                return Rest.sendError( res, errorCode, errorMessage, httpCode, errorDescription );
+            }
+            else{
+                return Rest.sendSuccessOne(res, result, httpCode);
+            }
+
         });
     }
 };

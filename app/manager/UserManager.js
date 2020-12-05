@@ -467,6 +467,41 @@ module.exports = {
         }
     },
 
+    forget_pw: function( email, callback){
+        try {
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+            User.findOne({
+                where: {email:email},
+            }).then(result=>{// result kq trả về từ câu query 
+                "use strict";
+                if (result)
+                {
+                    const msg = {
+                        to: `${email}`, // Change to your recipient
+                        from: `${process.env.SENDGRID_SENDER}`, // Change to your verified sender
+                        subject: "Account Verification",
+                        html: `<br><a href="http://localhost:5000/v1/change_pw/${result.dataValues.id}">CLICK ME TO CHANGE YOUR TOYSTRADE ACCOUNT PASSWORD</a>`
+                      }
+                      sgMail.send(msg).then(() => {
+                        console.log('Email sent')
+                      }).catch((error) => {
+                        console.error(error)
+                      })
+                }
+                else
+                {
+                    return callback(2, 'email not exisits', 400, "", null);
+                }     
+                return callback(null, null, 200, null, result);
+            }).catch(function(error){
+                "use strict";
+                return callback(1, 'create_user_fail', 400, error, null);
+            });
+        }catch(error){
+            return callback(2, 'create_by_admin_user_fail', 400, error, null);
+        }
+    },
+
     // createByAdmin: function( userData, callback){
     //     try {
     //         if ( !Pieces.VariableBaseTypeChecking(userData.userName, 'string')
@@ -616,6 +651,48 @@ module.exports = {
         }
     },
 
+    change_pw: function(id ,data , callback) {
+        try {
+            let queryObj ={} ;
+            if ( !Pieces.VariableBaseTypeChecking( data.password, 'string') ) {
+                return callback(1, 'invalid_user_password', 400,'password is not a string', null);
+            }
+            else
+            {
+                queryObj.password =   BCrypt.hashSync(data.password, 10);;
+            }        
+            User.findOne({
+                where: {id: id},
+            }).then(result=>{// result kq trả về từ câu query 
+                "use strict";
+                if (result)
+                {             
+                User.update(
+                    queryObj,
+                    {where: {id: id}}).then(result=>{
+                        "use strict";
+                        if( (result !== null) && (result.length > 0) && (result[0] > 0) ){
+                            return callback(null, null, 200, null, id);
+                        }else{
+                            return callback(1, 'update_user_fail', 400, '', null);
+                        }
+                }).catch(function(error){
+                    "use strict";
+                    return callback(2, 'update_user_fail', 400, error, null);
+                });
+                }
+                else
+                {
+                    return callback(2, 'user not found', 400, error, null);
+                }
+            }).catch(function(error){
+                "use strict";
+                return callback(3, 'user not found', 400, error, null);
+            });
+        }catch(error){
+            return callback(4, 'get_one_account_fail', 400, error, null);
+        }
+    },
     signUP: function(accessUserId, accessUserType, id, callback) {
         try {
             let queryObj={};

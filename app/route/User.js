@@ -45,6 +45,7 @@ module.exports = function (app) {
     // app.post('/v1/auth/users', UserCtrl.createByAdmin);
     app.post('/v1/users', UserCtrl.create);
     app.put('/v1/verification/:id', UserCtrl.signUP);
+    app.put('/v1/change_pw/:id', UserCtrl.change_pw);
     /**
      * @api {POST} /v1/login Login
      * @apiVersion 1.0.0
@@ -88,6 +89,7 @@ module.exports = function (app) {
      *     }
      */
     app.post('/v1/login', UserCtrl.login);
+    app.post('/v1/forgetPw', UserCtrl.forget_pw);
     /**
      * @api {GET} /v1/auth/users/:id Get One
      * @apiVersion 1.0.0

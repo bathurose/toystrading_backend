@@ -424,19 +424,15 @@ module.exports = {
         }
     },
     //findone : phải có catch
-    authenticate: function (userName, password, callback) {
+    authenticate: function (email, password, callback) {
         try {
-            if (!Pieces.VariableBaseTypeChecking(userName,'string') ) {
-                return callback(1, 'invalid_user_user_name', 422, 'user name is not a string', null);
-            }
 
             if (!Pieces.VariableBaseTypeChecking(password,'string')) {
                 return callback(2, 'invalid_user_password', 422, 'password is not a string', null);
             }
 
-            let where = { userName: userName };
+            let where = { email: email };
             let attributes = ['id', 'userName','password', 'activated','isVerifyEmail', 'email', 'type'];
-
             User.findOne( {
                 where: where,
                 attributes: attributes}).then( account=>{

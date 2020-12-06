@@ -157,10 +157,10 @@ module.exports = {
     },
 
     login: function (req, res) {
-        let userName = req.body.userName || '';
+        let email = req.body.email || '';
         let password = req.body.password || '';
 
-        UserManager.authenticate(userName, password, function (errorCode, errorMessage, httpCode, errorDescription, result) {
+        UserManager.authenticate(email, password, function (errorCode, errorMessage, httpCode, errorDescription, result) {
             if ( errorCode ) {
                 return Rest.sendError( res, errorCode, errorMessage, httpCode, errorDescription );
             }

@@ -14,18 +14,29 @@ const Tag = Models.Tag;
 module.exports = {
     create : function (accessUserId,accessUserType, tagData, callback) {
         try {
+           
             if ( !Pieces.VariableBaseTypeChecking(tagData,'string') ) {
+           
                 return callback(2, 'invalid_tag_value', 400, 'value is not a string', null);
             }          
             if ( accessUserType == Constant.USER_TYPE.MODERATOR ) {
+             
                 return callback(1, 'invalid_user_type', 400, null, null);
             }
 
-            let temp = Tag.findOne({ where: { value:tagData } });
-            if (temp)
-            {
-                return callback(2, 'tag value exisits', 400, error, null);
-            }
+        
+            Tag.findOne({
+                where: {value:tagData},
+            }).then(result=>{// result kq trả về từ câu query 
+                "use strict";
+                if (result)
+                {
+                    return callback(2, 'tag exisits', 400, "", null);
+                }
+                }).catch(function(error){
+                    "use strict";
+                    return callback(2, 'update_user_fail', 400, error, null);
+                });
 
             let queryObj = {};
             queryObj.value = tagData;

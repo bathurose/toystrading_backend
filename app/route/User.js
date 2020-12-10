@@ -45,7 +45,7 @@ module.exports = function (app) {
     // app.post('/v1/auth/users', UserCtrl.createByAdmin);
     app.post('/v1/users', UserCtrl.create);
     app.get('/v1/verification/:id', UserCtrl.signUP);
-    app.put('/v1/change_pw/:id', UserCtrl.change_pw);
+    app.get('/v1/change_pw/:id', UserCtrl.change_pw);
     /**
      * @api {POST} /v1/login Login
      * @apiVersion 1.0.0

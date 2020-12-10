@@ -177,6 +177,31 @@ module.exports = {
             queryObj.updatedBy = accessUserId; //set
             queryObj.updatedAt = new Date();
             where.id = userId; //where 
+            User.findOne({
+                where: {email:updateData.email},
+            }).then(result=>{// result kq trả về từ câu query 
+                "use strict";
+                if (result)
+                {
+                    return callback(2, 'email exisits', 400, "", null);
+                }
+                }).catch(function(error){
+                    "use strict";
+                    return callback(2, 'update_user_fail', 400, error, null);
+                });
+
+            User.findOne({
+                where: {userName :updateData.userName },
+            }).then(result=>{// result kq trả về từ câu query 
+                "use strict";
+                if (result)
+                {
+                    return callback(2, 'username exisits', 400, "", null);
+                }
+                }).catch(function(error){
+                    "use strict";
+                    return callback(2, 'update_user_fail', 400, error, null);
+                });
                  
             if ( Pieces.VariableBaseTypeChecking(updateData.userName, 'string')
                 && Validator.isLength(updateData.userName, {min: 4, max: 64}) ) {                 
@@ -188,10 +213,7 @@ module.exports = {
                 queryObj.email = updateData.email;
             }
 
-            if(Pieces.ValidObjectEnum(updateData.activated, Constant.ACTIVATED)){
-                queryObj.activated = updateData.activated;
-            }
-
+       
             if(Pieces.ValidObjectEnum(updateData.type, Constant.USER_TYPE)){
                 queryObj.type = updateData.type;
             }
@@ -200,10 +222,7 @@ module.exports = {
                 queryObj.phone = updateData.phone;
             }
 
-            if ( Pieces.VariableBaseTypeChecking(updateData.password, 'string')
-                    && Validator.isLength(updateData.password, {min: 4, max: 64}) ) {
-                queryObj.password = BCrypt.hashSync(updateData.password, 10);
-            }
+      
             User.update(
                 queryObj,
                 {where: where}).then(result=>{
@@ -236,7 +255,7 @@ module.exports = {
             if ( accessUserId !== parseInt(userId) && accessUserType == Constant.USER_TYPE.MODERATOR ) {
                 return callback(1, 'invalid_user_right', 403, null, null);
             }
-            console.log( updateData.password,updateData.newPassword)
+     
             queryObj.updatedBy = accessUserId; //set
             queryObj.updatedAt = new Date();
 
@@ -629,7 +648,7 @@ module.exports = {
                     to: `${userData.email}`, // Change to your recipient
                     from: `${process.env.SENDGRID_SENDER}`, // Change to your verified sender
                     subject: "Account Verification",
-                    html: `<br><a href="http://localhost:3000/v1/verification/${result.dataValues.id}">CLICK ME TO ACTIVATE YOUR TOYSTRADE ACCOUNT</a>`
+                    html: `<br><a href="http://toystrading.herokuapp.com/v1/verification/${result.dataValues.id}">CLICK ME TO ACTIVATE YOUR TOYSTRADE ACCOUNT</a>`
                   }
                   
                   sgMail.send(msg).then(() => {
@@ -637,7 +656,7 @@ module.exports = {
                     }).catch((error) => {
                       console.error(error)
                     })
-                return callback(null, null, 200, null, result);
+                return callback(null, 'Please check your Email', 200, null, result);
             }).catch(function(error){
                 "use strict";
                 return callback(1, 'create_user_fail', 400, error, null);
@@ -703,7 +722,7 @@ module.exports = {
                     {where: {id: id}}).then(result=>{
                         "use strict";
                         if( (result !== null) && (result.length > 0) && (result[0] > 0) ){
-                            return callback(null, null, 200, null, id);
+                            return callback(null, 'Create user success', 200, null, id);
                         }else{
                             return callback(1, 'update_user_fail', 400, '', null);
                         }

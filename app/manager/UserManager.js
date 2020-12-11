@@ -482,9 +482,17 @@ module.exports = {
         }
     },
 
-    forget_pw: function( email, callback){
+    forget_pw: function( email,newPassword, callback){
         try {
             sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+            if ( !Pieces.VariableBaseTypeChecking(newPassword, 'string') ) {
+                return callback(1, 'invalid_user_password', 400,'password is not a string', null);
+            }
+            else
+            {
+                newPass = BCrypt.hashSync(newPassword, 10);
+            } 
+           
             User.findOne({
                 where: {email:email},
             }).then(result=>{// result kq trả về từ câu query 
@@ -495,7 +503,8 @@ module.exports = {
                         to: `${email}`, // Change to your recipient
                         from: `${process.env.SENDGRID_SENDER}`, // Change to your verified sender
                         subject: "Account Verification",
-                        html: `<br><a href="http://localhost:5000/v1/change_pw/${result.dataValues.id}">CLICK ME TO CHANGE YOUR TOYSTRADE ACCOUNT PASSWORD</a>`
+                        // html: `<br><a href="http://toystrading.herokuapp.com/v1/change_pw/${result.dataValues.id}">CLICK ME TO CHANGE YOUR TOYSTRADE ACCOUNT PASSWORD</a>`
+                        html: `<br><a href="http://toystrading.herokuapp.com/v1/change_pw?id=${result.dataValues.id}&newPassword=${newPass}">CLICK ME TO CHANGE YOUR TOYSTRADE ACCOUNT PASSWORD</a>`
                       }
                       sgMail.send(msg).then(() => {
                         console.log('Email sent')
@@ -517,49 +526,7 @@ module.exports = {
         }
     },
 
-    // createByAdmin: function( userData, callback){
-    //     try {
-    //         if ( !Pieces.VariableBaseTypeChecking(userData.userName, 'string')
-    //                 || !Validator.isLength(userData.userName, {min: 4, max: 128}) ) {
-    //             return callback(1, 'invalid_user_login_name', 400, 'login name should be alphanumeric, lowercase and length 4-128', null);
-    //         }
-    //         if ( !Pieces.VariableBaseTypeChecking(userData.password, 'string') ) {
-    //             return callback(1, 'invalid_user_password', 400,'password is not a string', null);
-    //         }
-
-    //         if ( !Pieces.VariableBaseTypeChecking(userData.email, 'string')
-    //                 || !Validator.isEmail(userData.email) ) {
-    //             return callback(1, 'invalid_user_email', 400, 'email is incorrect format', null);
-    //         }
-    
-    //         if ( !Validator.isLength(userData.phone, {min: 10, max: 12})) {
-    //             return callback(1, 'invalid_user_phone', 400, 'phone is incorrect format', null);              
-    //         }
-
-    //         let queryObj = {};
-
-    //         queryObj.userName = userData.userName;
-    //         queryObj.email = userData.email;
-    //         queryObj.password = BCrypt.hashSync(userData.password, 10);
-    //         queryObj.phone = userData.phone;
-    //         queryObj.ecoin = 200000;
-
-    //         if(userData.activated === Constant.ACTIVATED.YES || userData.activated === Constant.ACTIVATED.NO){
-    //             queryObj.activated = userData.activated;
-    //         }else{
-    //             queryObj.activated = Constant.ACTIVATED.YES;
-    //         }        
-    //         User.create(queryObj).then(result=>{
-    //             "use strict";
-    //             return callback(null, null, 200, null, result);
-    //         }).catch(function(error){
-    //             "use strict";
-    //             return callback(1, 'create_user_fail', 420, error, null);
-    //         });
-    //     }catch(error){
-    //         return callback(1, 'create_by_admin_user_fail', 400, error, null);
-    //     }
-    // },
+   
     create: function( userData, callback){
         try {
             sgMail.setApiKey(process.env.SENDGRID_API_KEY)
@@ -607,14 +574,6 @@ module.exports = {
                 return callback(1, 'invalid_user_phone', 400, 'phone is incorrect format (10->11)', null);              
             }
             
-            //nodemailer
-            // var transporter = nodemailer.createTransport({
-            //     service: 'gmail',
-            //     auth:{
-            //         user:'sys.tradetoys@gmail.com',
-            //         pass:'bathuden'
-            //     }
-            // });
 
             let queryObj = {};
 
@@ -626,24 +585,6 @@ module.exports = {
             queryObj.ecoin = 200000;      
             User.create(queryObj).then(result=>{
                 "use strict";
-                //nodemailer
-                // idUser = result.dataValues.id;
-                // var mailOption = {
-                //     from :'sys.tradetoys@gmail.com', // sender this is your email here
-                //     to : `${userData.email}`, // receiver email2
-                //     subject: "Account Verification",
-                //     html: `<br><a href="http://localhost:3000/v1/verification/:id=${result.dataValues.id}">CLICK ME TO ACTIVATE YOUR ACCOUNT</a>`
-                // }
-                // transporter.sendMail(mailOption,(error,info)=>{
-                //     if(error){
-                //         console.log(error)
-                //     }else{
-                //         let userdata = {
-                //             email : `${userData.email}`,
-                //         }
-                //     }
-                // })
-
                 const msg = {
                     to: `${userData.email}`, // Change to your recipient
                     from: `${process.env.SENDGRID_SENDER}`, // Change to your verified sender
@@ -666,28 +607,22 @@ module.exports = {
         }
     },
 
-    change_pw: function(id ,data , callback) {
-        try {
-            let queryObj ={} ;
-            if ( !Pieces.VariableBaseTypeChecking( data.password, 'string') ) {
-                return callback(1, 'invalid_user_password', 400,'password is not a string', null);
-            }
-            else
-            {
-                queryObj.password =   BCrypt.hashSync(data.password, 10);;
-            }        
+    change_pw: function(data , callback) {
+        try {  
+            let queryObj = {};
+            queryObj.password =data.newPassword;          
             User.findOne({
-                where: {id: id},
+                where: {id: data.id},
             }).then(result=>{// result kq trả về từ câu query 
                 "use strict";
                 if (result)
                 {             
                 User.update(
                     queryObj,
-                    {where: {id: id}}).then(result=>{
+                    {where: {id: data.id}}).then(result=>{
                         "use strict";
                         if( (result !== null) && (result.length > 0) && (result[0] > 0) ){
-                            return callback(null, null, 200, null, id);
+                            return callback(null, null, 200, null, data.id);
                         }else{
                             return callback(1, 'update_user_fail', 400, '', null);
                         }

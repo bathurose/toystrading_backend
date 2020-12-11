@@ -32,18 +32,15 @@ module.exports = {
                 return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
             }
             return Rest.sendSuccessOne(res, result, httpCode);
-        })
-        
-        
+        })       
     },
     change_pw: function (req, res) {
-        let id = req.params.id  || '';
-        let data = req.body || '';
-        UserManager.change_pw(id,data, function (errorCode, errorMessage, httpCode, errorDescription, result) {
+        let data = req.query || '';
+            UserManager.change_pw(data, function (errorCode, errorMessage, httpCode, errorDescription, result) {
             if (errorCode) {
                 return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
             }
-            return Rest.sendSuccessOne(res, result, httpCode);
+            return Rest.sendSuccessOne(res, "CHANGE PASSWORD SUCCESS", httpCode);
         })
         
         
@@ -177,7 +174,8 @@ module.exports = {
 
     forget_pw: function (req, res) {
         let email = req.body.email || '';
-        UserManager.forget_pw(email,  function (errorCode, errorMessage, httpCode, errorDescription, result) {
+        let newPassword = req.body.newPassword || '';
+        UserManager.forget_pw(email, newPassword,  function (errorCode, errorMessage, httpCode, errorDescription, result) {
             if ( errorCode ) {
                 return Rest.sendError( res, errorCode, errorMessage, httpCode, errorDescription );
             }

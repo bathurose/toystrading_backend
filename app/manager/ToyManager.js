@@ -113,13 +113,13 @@ module.exports = {
         }
     },
 
-    getAll: function(accessUserId, accessUserType, query, callback){
+    getAll: function(query, callback){
         try {
             let where ={};
             let page = 1;
             let perPage = Constant.DEFAULT_PAGING_SIZE
             let sort = [];
-            this.parseFilter(accessUserId, accessUserType, where, query.filter);  
+            this.parseFilter(where, query.filter);  
             // WHERE       
             if( Pieces.VariableBaseTypeChecking(query.toyName, 'string') ){
                 where.toyName = {[Sequelize.Op.like]:query.toyName +"%"};
@@ -463,7 +463,7 @@ module.exports = {
     },
 
     // // --------- others ----------
-    parseFilter: function(accessUserId, accessUserType, condition, filters) {
+    parseFilter: function(condition, filters) {
         try {
             if ( !Pieces.VariableBaseTypeChecking(filters,'string')
                 || !Validator.isJSON(filters) ) {

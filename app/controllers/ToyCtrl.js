@@ -85,10 +85,9 @@ module.exports = {
     },
 
     getAll: function (req, res) {
-        let accessUserId = req.query.accessUserId || '';
-        let accessUserType = req.query.accessUserType || '';
+  
         let queryContent = req.query || '';       
-        ToyManager.getAll(accessUserId, accessUserType, queryContent, function (errorCode, errorMessage, httpCode, errorDescription, results) {
+        ToyManager.getAll(queryContent, function (errorCode, errorMessage, httpCode, errorDescription, results) {
             if (errorCode) {
                 return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
             } else {

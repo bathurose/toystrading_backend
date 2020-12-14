@@ -50,10 +50,7 @@ let Toy = MySequelize.define('toy', {
             key: 'id'
         }
     },
-    comment: {
-        type: Sequelize.BIGINT(20),
-        allowNull: true,
-    },
+
     createdBy: {
         type: Sequelize.BIGINT(20),
         allowNull: false,

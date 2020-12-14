@@ -94,5 +94,15 @@ module.exports = {
                 return Rest.sendSuccessOne(res, results, httpCode);
             }
         });
-    },  
+    }, 
+    get_new_toy: function (req, res) {      
+        ToyManager.get_new_toy( function (errorCode, errorMessage, httpCode, errorDescription, result) {
+       
+            if (errorCode) {
+                return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
+            } else {
+                return Rest.sendSuccessOne(res, result, httpCode);
+            }
+        });
+    },   
 };

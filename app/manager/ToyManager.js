@@ -11,7 +11,7 @@ const Sequelize = require('sequelize');
 const Constant = require('../utils/Constant');
 const Pieces = require('../utils/Pieces');
 const Models = require('../models');
-const { INTEGER, NUMBER } = require('sequelize');
+const { INTEGER, NUMBER, and } = require('sequelize');
 const Asset = Models.Asset;
 const Toy = Models.Toy;
 const Category = Models.Category;
@@ -61,7 +61,7 @@ module.exports = {
             queryObj.description = toyData.description;
             queryObj.status = "READY";
             queryObj.category = toyData.category;
-            queryObj.comment = toyData.comment;
+    
             queryObj.createdBy = accessUserId;
             queryObj.updatedBy = accessUserId;   
                //Asset
@@ -120,7 +120,9 @@ module.exports = {
             let perPage = Constant.DEFAULT_PAGING_SIZE
             let sort = [];
             this.parseFilter(where, query.filter);  
-            // WHERE       
+            // WHERE 
+     
+          
             if( Pieces.VariableBaseTypeChecking(query.toyName, 'string') ){
                 where.toyName = {[Sequelize.Op.like]:query.toyName +"%"};
             }           
@@ -140,6 +142,10 @@ module.exports = {
             if(query.category != undefined)
             {
                 where.category = query.category;
+            }
+            if((query.min != undefined) && (query.max != undefined) )
+            {
+                where.ecoin= { [Sequelize.Op.between]:[query.min, query.max] };
             }
             if(query.createdBy != undefined)
             {
@@ -192,6 +198,7 @@ module.exports = {
               });
             Toy.findAndCountAll({         
                     where: where,   
+                   
                     include: [{                     
                         model: Tag_Toy,    
                         required :k ,
@@ -233,6 +240,46 @@ module.exports = {
             return callback(1, 'get_all_toy_fail', 400, error, null);
         }
     },
+
+    get_new_toy: function(callback){
+        try {         
+             
+            
+            // Toy.hasMany(Asset);
+            Toy.hasMany(Asset, {
+                foreignKey: "toyid",               
+              });
+            Asset.belongsTo(Toy, {
+                foreignKey: "toyid",              
+              });
+            Toy.hasMany(Tag_Toy, {
+                foreignKey: "toyid",               
+              });
+            Tag_Toy.belongsTo(Toy, {
+                foreignKey: "toyid",              
+              });
+            Toy.findAll({          
+                    include: [{                     
+                        model: Tag_Toy,                                                                        
+                      },
+                      {
+                        model: Asset,                   
+                      }],
+                    limit: 10,
+                    order:  [['createdAt', 'DESC']]
+                })
+             
+                .then((data) => {    
+           
+                    return callback(null, null, 200, null,data);
+                }).catch(function (error) {
+                    return callback(1, 'find_and_count_all_toy_fail', 420, error, null);
+                });
+        }catch(error){
+            return callback(1, 'get_all_toy_fail', 400, error, null);
+        }
+    },
+
 
     update: function (accessUserId, accessUserType, toyId, toyData, assetData, callback) {
         try {          

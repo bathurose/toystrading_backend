@@ -2,9 +2,11 @@ const multer = require("multer");
 
 var storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, global.CLOUD_API.rootPath + "/image/");
+    // cb(null, "./image/");
+    // consold.log(global.CLOUD_API.rootPath); 
+    cb(null, __basedir + "/app/image/");
   },
-  
+ 
   filename: (req, file, callback) => {
    
     const match = ["image/png", "image/jpeg"];

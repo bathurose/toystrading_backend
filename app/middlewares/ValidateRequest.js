@@ -14,7 +14,11 @@ module.exports = function (req, res, next) {
     if (req.method === 'OPTIONS') {
         next();
     }
-    let token = (req.body && req.body.access_token) || req.headers['access_token'] || (req.query && req.query.access_token);
+    let token = (req.body && req.body.access_token) || req.headers['access_token'] || (req.query && req.query.access_token) || req.headers['authorization'];
+    if (token.startsWith('Bearer '))
+    {
+        token = token.slice(7,token.length);
+    }
 
     if (token) {
         try {

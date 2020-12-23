@@ -74,6 +74,19 @@ module.exports = {
             }
         });
     },  
+    getOne: function (req, res) {
+        let accessUserId = req.query.accessUserId || '';
+        let accessUserType = req.query.accessUserType || '';
+        let id = req.params.id;
+
+        CategoryManager.getOne(accessUserId, accessUserType, id, function (errorCode, errorMessage, httpCode, errorDescription, results) {
+            if (errorCode) {
+                return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
+            } else {
+                return Rest.sendSuccessOne(res, results, httpCode);
+            }
+        });
+    },
 
     getAllCB: function (req, res) {
         let accessUserId = req.query.accessUserId || '';

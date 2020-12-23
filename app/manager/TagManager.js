@@ -55,43 +55,36 @@ module.exports = {
         }
     },
 
-    // getOne: function(accessUserId, accessUserType, id, callback) {
-    //     try {
-    //         // kiem tra giá trị rỗng
-    //         if ( !( Pieces.VariableBaseTypeChecking(id,'string') && Validator.isInt(id) )
-    //             && !Pieces.VariableBaseTypeChecking(id,'number') ){
-    //             return callback(1, 'invalid_user_id', 400, 'user id is incorrect', null);
-    //         }
-    //         // kiểm tra cấp độ
-    //         if ( (accessUserId !== id) && (accessUserType < Constant.USER_TYPE.MODERATOR) ) {
-    //             return callback(1, 'invalid_user_type', 403, null, null);
-    //         }
+    getOne: function(accessUserId, accessUserType, id, callback) {
+        try {
+            // kiem tra giá trị rỗng
+            if ( !( Pieces.VariableBaseTypeChecking(id,'string') && Validator.isInt(id) )
+                && !Pieces.VariableBaseTypeChecking(id,'number') ){
+                return callback(1, 'invalid_user_id', 400, 'user id is incorrect', null);
+            }
+            // kiểm tra cấp độ
+            if ( accessUserType == Constant.USER_TYPE.MODERATOR ) {
+             
+                return callback(1, 'invalid_user_type', 400, null, null);
+            }
 
-
-    //         let where = {};
-    //         let attributes = ['id', 'loginName','email','type', 'displayName', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'];
-
-    //         if(accessUserId !== parseInt(id)) {
-    //             where = {id: id, type: { [Sequelize.Op.lt]: accessUserType} };
-    //         }else{
-    //             where = {id: id};
-    //         }
-
-    //         User.findOne({
-    //             where: where,
-    //             attributes: attributes,
-    //         }).then(result=>{// result kq trả về từ câu query 
-    //             "use strict";
-    //             if(result){
-    //                 return callback(null, null, 200, null, result);
-    //             }else{
-    //                 return callback(1, 'invalid_account', 403, null, null);
-    //             }
-    //         });
-    //     }catch(error){
-    //         return callback(1, 'get_one_account_fail', 400, error, null);
-    //     }
-    // },
+            let where = {};    
+            where = {id: id};
+            
+            Tag.findOne({
+                where: where
+            }).then(result=>{// result kq trả về từ câu query 
+                "use strict";
+                if(result){
+                    return callback(null, null, 200, null, result);
+                }else{
+                    return callback(1, 'invalid_account', 403, null, null);
+                }
+            });
+        }catch(error){
+            return callback(1, 'get_one_account_fail', 400, error, null);
+        }
+    },
     
 
     getAll: function(accessUserId, accessUserType, query, callback){

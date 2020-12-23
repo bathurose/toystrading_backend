@@ -216,6 +216,37 @@ module.exports = {
         }
     },
 
+    getOne: function(accessUserId, accessUserType, id, callback) {
+        try {
+            // kiem tra giá trị rỗng
+            if ( !( Pieces.VariableBaseTypeChecking(id,'string') && Validator.isInt(id) )
+                && !Pieces.VariableBaseTypeChecking(id,'number') ){
+                return callback(1, 'invalid_user_id', 400, 'user id is incorrect', null);
+            }
+            // kiểm tra cấp độ
+            if ( accessUserType == Constant.USER_TYPE.MODERATOR ) {
+             
+                return callback(1, 'invalid_user_type', 400, null, null);
+            }
+
+            let where = {};    
+            where = {id: id};
+            
+            Category.findOne({
+                where: where
+            }).then(result=>{// result kq trả về từ câu query 
+                "use strict";
+                if(result){
+                    return callback(null, null, 200, null, result);
+                }else{
+                    return callback(1, 'invalid_account', 403, null, null);
+                }
+            });
+        }catch(error){
+            return callback(1, 'get_one_account_fail', 400, error, null);
+        }
+    },
+    
     
    
 

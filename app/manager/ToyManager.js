@@ -26,10 +26,10 @@ module.exports = {
         try {
        
             let temp = parseInt(toyData.ecoin);
-            if (assetData==undefined)
-            {
-            return callback(1, 'You must select file', 400, null, null);
-            } 
+            // if (assetData==undefined)
+            // {
+            // return callback(1, 'You must select file', 400, null, null);
+            // } 
             if ( !Pieces.VariableBaseTypeChecking(toyData.toyName, 'string')
             || !Validator.isLength(toyData.toyName, {min: 5, max: 128}) ) {
                 return callback(1, 'invalid_toy_name', 400, 'length 4-128', null);
@@ -68,10 +68,7 @@ module.exports = {
             queryObj.createdBy = accessUserId;
             queryObj.updatedBy = accessUserId;   
                //Asset
-            if (assetData==undefined)
-            {
-            return callback(1, 'You must select file', 400, null, null);
-            }    
+         
             let arrTag = JSON.parse( JSON.stringify(toyData.tag));
        
             Toy.create(queryObj).then(result=>{

@@ -22,7 +22,9 @@ const { ok } = require('assert');
 
 module.exports = {
     create : function (accessUserId,accessUserType ,toyData , assetData, callback) {
+       
         try {
+       
             let temp = parseInt(toyData.ecoin);
             if (assetData==undefined)
             {
@@ -47,7 +49,8 @@ module.exports = {
             // });                 
                
             assetData.forEach((value) => {
-                asssetObj.push(value.path);              
+                asssetObj.push(value.path);   
+                          
             });
             //Asset
             let queryObj = {};
@@ -69,12 +72,13 @@ module.exports = {
             {
             return callback(1, 'You must select file', 400, null, null);
             }    
-            
+            let arrTag = JSON.parse( JSON.stringify(toyData.tag));
+       
             Toy.create(queryObj).then(result=>{
                 "use strict";                             
-                for (let i =0 ;i<toyData.tag.length;i++)
+                for (let i =0 ;i<arrTag.length;i++)
                 {
-                    tagObj.tag=toyData.tag[i];
+                    tagObj.tag=arrTag[i].id;
                     tagObj.toyid=result.dataValues.id;
                     tagObj.createdBy = accessUserId;
                     tagObj.updatedBy = accessUserId;  
@@ -452,7 +456,6 @@ module.exports = {
                 return callback(1, 'invalid_toy_id', 400, 'toy id is incorrect', null);
             }        
             let where = {};
-            console.log(id);
             where = {id: id};
             console.log(where);
             Toy.hasMany(Asset, {

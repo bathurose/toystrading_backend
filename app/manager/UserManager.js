@@ -556,6 +556,18 @@ module.exports = {
                     "use strict";
                     return callback(2, 'update_user_fail', 400, error, null);
                 });
+            User.findOne({
+                where: {phone :userData.phone },
+            }).then(result=>{// result kq trả về từ câu query 
+                "use strict";
+                if (result)
+                {
+                    return callback(2, 'phone exisits', 400, "", null);
+                }
+                }).catch(function(error){
+                    "use strict";
+                    return callback(2, 'update_user_fail', 400, error, null);
+                });
 
             if ( !Pieces.VariableBaseTypeChecking(userData.userName, 'string')
                     || !Validator.isLength(userData.userName, {min: 4, max: 128}) ) {

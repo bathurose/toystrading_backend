@@ -35,7 +35,7 @@ module.exports = {
                 }
                 }).catch(function(error){
                     "use strict";
-                    return callback(2, 'update_user_fail', 400, error, null);
+                    return callback(2, 'create_fail', 400, error, null);
                 });
 
             let queryObj = {};
@@ -164,6 +164,19 @@ module.exports = {
 
     update: function (accessUserId, accessUserType,tagId, updateData, callback) {
         try {
+            
+            Tag.findOne({
+                where: {value:updateData},
+            }).then(result=>{// result kq trả về từ câu query 
+                "use strict";
+                if (result)
+                {
+                    return callback(2, 'tag exisits', 400, "", null);
+                }
+                }).catch(function(error){
+                    "use strict";
+                    return callback(2, 'create_fail', 400, error, null);
+                });
             let queryObj = {};
             let where = {};
             if ( !( Pieces.VariableBaseTypeChecking(tagId,'string')

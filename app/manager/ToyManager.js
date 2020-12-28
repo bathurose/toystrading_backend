@@ -419,21 +419,30 @@ module.exports = {
                 && !Pieces.VariableBaseTypeChecking(id,'number') ){
                 return callback(1, 'invalid_toy_id', 400, 'toy id is incorrect', null);
             }
+            let queryObj_del = [];  
             where = { id: id };    
-            where_asset = { toyid:id};           
+            where_asset = { toyid:id};       
             Asset.findAll({where:where_asset}).then(asset=>{
-                "use strict";             
+                "use strict";                          
                 for (let i =0; i<asset.length;i++)
-                {
-                    fs.unlink( __basedir + "/public/uploads/"+ asset[i].dataValues.nameDt, function (err) {            
-                        if (err) {                                                 
-                            return callback(1, 'Image not exists in uploads folder',400 , err);                                    
-                        }                                                                                          
-                    });     
+                {               
+                        queryObj_del.push(asset[i].dataValues.url.substr(-34, 30));     
+                                    
                 }  
+                Cloudinary.deleteMutiple(queryObj_del,result_del => {         
+                    if (result_del.result === "ok")
+                    {           
+                            Asset.destroy({
+                                where: where_asset
+                            }).catch(function(error){
+                                "use strict";
+                                return callback(2, 'delete_asset_fail', 402, error, null);
+                            }); 
+                    }
+                })   
                 Toy.destroy({where: where}).then(result => {
                     "use strict";
-                    return callback(null, 'Delete sucess', 200, null);  
+                    return callback(null, 'Delete success', 200, null);  
                 }).catch(function(error){
                     return callback(1, 'remove_toy_fail', 420, error)            
                 })                                         

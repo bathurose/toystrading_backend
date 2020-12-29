@@ -128,13 +128,13 @@ module.exports = {
                 where.createdAt= {[Op.lt]: to,[Op.gt]: from};
             }
             Toy.hasMany(Transaction, {
-                as: 'Toy',
+                as: 'Toys',
                 foreignKey: {
                   name: 'toyid',     
                 }              
               });
             Transaction.belongsTo(Toy, {
-                as: 'Toy',
+                as: 'Toys',
                 foreignKey: {
                   name: 'toyid',
                 }              

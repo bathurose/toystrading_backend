@@ -135,6 +135,7 @@ module.exports = function (app) {
      *       "message": "invalid input"
      *     }
      */
+    app.get('/v1/auth/users/getOnly', UserCtrl.getOneOnly);
     app.get('/v1/auth/users/:id', UserCtrl.getOne);
     app.get('/v1/auth/users/statistic', UserCtrl.getOne);
     /**
@@ -220,6 +221,7 @@ module.exports = function (app) {
      *       "message": "invalid input"
      *     }
      */
+    app.put('/v1/auth/users/upOnly', UserCtrl.updateOnly);
     app.put('/v1/auth/users/:id', UserCtrl.update);
     app.put('/v1/auth/users/pw/:id', UserCtrl.updatePW);
     /**

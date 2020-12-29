@@ -41,6 +41,7 @@ module.exports = {
                 return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
             }
             return Rest.sendSuccessOne(res, "CHANGE PASSWORD SUCCESS", httpCode);
+            
         })
         
         
@@ -65,6 +66,19 @@ module.exports = {
                 return Rest.sendSuccessOne(res, result, httpCode);
             })
         }
+    },
+    getOneOnly: function (req, res) {
+        let accessUserId = req.query.accessUserId || '';
+        let accessUserType = req.query.accessUserType || '';
+     
+   
+            UserManager.getOneOnly(accessUserId, accessUserType,  function (errorCode, errorMessage, httpCode, errorDescription, result) {
+                if (errorCode) {
+                    return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
+                }
+                return Rest.sendSuccessOne(res, result, httpCode);
+            })
+        
     },
 
     getAll: function (req, res) {
@@ -106,6 +120,21 @@ module.exports = {
             }
             });
         }
+    },
+    updateOnly: function (req, res) {
+        let accessUserId = req.body.accessUserId || '';
+        let accessUserType = req.body.accessUserType || '';
+            let data = req.body || '';
+            UserManager.updateOnly( accessUserId, accessUserType, data, function (errorCode, errorMessage, httpCode, errorDescription, result) {
+                if (errorCode) {
+                    return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
+                } else {
+                let resData = {};
+                resData.accessUserId = result;
+                return Rest.sendSuccessOne(res, resData, httpCode);
+            }
+            });
+        
     },
     updatePW: function (req, res) {
         let accessUserId = req.body.accessUserId || '';
@@ -181,6 +210,7 @@ module.exports = {
             }
             else{
                 return Rest.sendSuccessOne(res, result, httpCode);
+           
             }
 
         });

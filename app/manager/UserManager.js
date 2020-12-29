@@ -47,6 +47,23 @@ module.exports = {
             return callback(2,'get_one_account_fail', 400, error, null);
         }
     },
+    getOneOnly: function(accessUserId, accessUserType, callback) {
+        try {
+            User.findOne({
+                where: {id: accessUserId}
+              
+            }).then(result=>{// result kq trả về từ câu query 
+                "use strict";
+                if(result){
+                    return callback(null, null, 200, null, result);
+                }else{
+                    return callback(1,'get_one_account_fail', 400, null, null);
+                }
+            });
+        }catch(error){
+            return callback(2,'get_one_account_fail', 400, error, null);
+        }
+    },
     // thống kê user, toys
     getStatistic: function(accessUserId, accessUserType, callback) { 
         try {
@@ -240,7 +257,110 @@ module.exports = {
             return callback(2, 'update_user_fail', 400, error, null);
         }
     },
-
+    updateOnly: function (accessUserId, accessUserType, updateData, callback) {
+        try {
+            console.log(updateData.phone)
+            let queryObj = {};
+            let where = {};
+            queryObj.updatedAt = new Date();
+            where.id = accessUserId; //where 
+            User.findOne({
+                where: {phone:updateData.phone},
+            }).then(result=>{// result kq trả về từ câu query 
+                "use strict";
+                if (result)
+                {
+                    return callback(2, 'phone exisits', 400, "", null);
+                }
+                }).catch(function(error){
+                    "use strict";
+                    return callback(2, 'update_user_fail', 400, error, null);
+                });
+                
+            User.findOne({
+                where: {email:updateData.email},
+            }).then(result=>{// result kq trả về từ câu query 
+                "use strict";
+                if (result)
+                {
+                    return callback(2, 'email exisits', 400, "", null);
+                }
+                }).catch(function(error){
+                    "use strict";
+                    return callback(2, 'update_user_fail', 400, error, null);
+                });
+            User.findOne({
+                where: {userName :updateData.userName },
+            }).then(result=>{// result kq trả về từ câu query 
+                "use strict";
+                if (result)
+                {
+                    return callback(2, 'username exisits', 400, "", null);
+                }
+                }).catch(function(error){
+                    "use strict";
+                    return callback(2, 'update_user_fail', 400, error, null);
+                });
+                if (updateData.newPassword != null)
+                {
+                    if ( Pieces.VariableBaseTypeChecking(updateData.newPassword, 'string')
+                        && Validator.isLength(updateData.newPassword, {min: 4, max: 64}) ) {
+                        queryObj.password = BCrypt.hashSync(updateData.newPassword, 10);
+                    }  
+                    else
+                    {
+                        return callback(2, 'password_incorrect', 400, error, null);
+                    }  
+                }
+            
+            if (updateData.userName != null)
+            {
+                if ( Pieces.VariableBaseTypeChecking(updateData.userName, 'string')
+                    && Validator.isLength(updateData.userName, {min: 4, max: 64}) ) {                 
+                    queryObj.userName = updateData.userName;
+                }
+                else
+                {
+                    return callback(2, 'userName_incorrect', 400, error, null);
+                }  
+             }
+            if (updateData.email != null)
+            {
+                if ( Validator.isEmail(updateData.email)) {
+                    queryObj.email = updateData.email;
+                }
+                else
+                {
+                    return callback(2, 'email_incorrect', 400, error, null);
+                }  
+            }
+            if (updateData.phone != null)
+            {
+                if ( Validator.isLength(updateData.phone, {min: 10, max: 12})) {      
+                    queryObj.phone = updateData.phone;
+                }
+                else
+                {
+                    return callback(2, 'phone_incorrect', 400, error, null);
+                }  
+            }
+            User.update(
+                queryObj,
+                {where: where}).then(result=>{
+                    "use strict";
+                    if( (result !== null) && (result.length > 0) && (result[0] > 0) ){
+                        return callback(null, null, 200, null, accessUserId);
+                    }else{
+                        return callback(1, 'update_user_fail', 400, '', null);
+                    }
+            }).catch(function(error){
+                "use strict";
+                return callback(1, 'update_user_fail', 420, error, null);
+            });
+        }catch(error){
+            return callback(2, 'update_user_fail', 400, error, null);
+        }
+    },
     updatePW: function (accessUserId, accessUserType,userId, updateData, callback) {
         try {
             let queryObj = {};

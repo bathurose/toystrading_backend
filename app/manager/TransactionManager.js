@@ -121,11 +121,12 @@ module.exports = {
             if(sort.length <= 0){
                 sort.push(['updatedAt', 'DESC']);
             }
-
-            var to = new Date(query.to);
-            var from = new Date(query.from);
-            where.createdAt= {[Op.lt]: to,[Op.gt]: from};
-            
+            if (query.to != null && query.from !=null )
+            {
+                var to = new Date(query.to);
+                var from = new Date(query.from);
+                where.createdAt= {[Op.lt]: to,[Op.gt]: from};
+            }
             let offset = perPage * (page - 1);
             Transaction.findAndCountAll({
                     where: where,

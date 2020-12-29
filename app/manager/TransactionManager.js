@@ -127,8 +127,50 @@ module.exports = {
                 var from = new Date(query.from);
                 where.createdAt= {[Op.lt]: to,[Op.gt]: from};
             }
+            Toy.hasMany(Transaction, {
+                as: 'Toy',
+                foreignKey: {
+                  name: 'toyid',     
+                }              
+              });
+            Transaction.belongsTo(Toy, {
+                as: 'Toy',
+                foreignKey: {
+                  name: 'toyid',
+                }              
+              });
+     
+            User.hasMany(Transaction, {
+                as: 'Buyer',
+                foreignKey: {
+                  name: 'buyer',     
+                }              
+              });
+            Transaction.belongsTo(User, {
+                as: 'Buyer',
+                foreignKey: {
+                  name: 'buyer',
+                }              
+              });
+              User.hasMany(Transaction, {
+                as: 'Seller',
+                foreignKey: {
+                  name: 'seller',     
+                }             
+              });
+            Transaction.belongsTo(User, {
+                as: 'Seller',
+                foreignKey: {
+                  name: 'seller',     
+                }              
+              });
+             
             let offset = perPage * (page - 1);
             Transaction.findAndCountAll({
+                include: [{                     
+                    all:true                                                         
+                  } 
+                ],
                     where: where,
                     limit: perPage,
                     offset: offset,

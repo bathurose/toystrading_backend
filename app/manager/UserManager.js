@@ -541,7 +541,7 @@ module.exports = {
             }
 
 
-            let where = {id: accessUserId, userName:accessLoginName, type:accessUserType, activated:Constant.ACTIVATED.YES};
+            let where = {id: accessUserId,  type:accessUserType, activated:Constant.ACTIVATED.YES};
             let attributes = ['id', 'userName','email','type', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'];
 
             User.findOne({

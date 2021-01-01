@@ -21,6 +21,7 @@ const User = Models.User;
 module.exports = {
     create : function (accessUserId,accessUserType, transData, callback) {
         try {
+            let queryObj = {};
             //count trans
             Transaction.count({
                 where:{buyer:accessUserId},
@@ -33,7 +34,7 @@ module.exports = {
                 "use strict";
                 return callback(1, 'count_transaction_fail', 400, error, null);
             });
-
+           
             //compare ecoin
             Toy.findOne({
                 where:{id:transData.toyid},
@@ -56,19 +57,18 @@ module.exports = {
                 return callback(1, 'find toy fail', 400, error, null);
             });
             Toy.update(
-                {status : 'PENDING'},
-                {where:{
-                    id:transData.toyid,
+                {
+                    status : 'PENDING',
                     updatedAt : new Date()
-                }
+                },
+                {
+                    where:{id:transData.toyid}
                 }
             ).catch(function(error){
                 "use strict";
                 return callback(1, 'update toy fail', 400, error, null);
-            });
-
-            let queryObj = {};
-            queryObj.buyer = accessUserId;          
+            });   
+            queryObj.buyer = accessUserId;
             queryObj.toyid = transData.toyid;
             queryObj.status='REQUEST';
             queryObj.createdBy = accessUserId;
@@ -79,7 +79,7 @@ module.exports = {
                 return callback(null, null, 200, null, result);
             }).catch(function(error){
                 "use strict";
-                return callback(1, 'create_transaction_fail (the tag value exsists )', 400, error, null);
+                return callback(1, 'create_transaction_fail', 400, error, null);
             });
         }catch(error){
             return callback(2, 'create_transaction_fail', 400, error, null);

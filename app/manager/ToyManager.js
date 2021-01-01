@@ -506,6 +506,52 @@ module.exports = {
             return callback(1, 'get_one_toy_fail', 400, error, null);
         }
     },  
+
+    getToyByUser: function(accessUserId, accessUserType, id, callback) {
+        try {
+            // kiem tra giá trị rỗng
+            if ( !( Pieces.VariableBaseTypeChecking(id,'string') && Validator.isInt(id) )
+                && !Pieces.VariableBaseTypeChecking(id,'number') ){
+                return callback(1, 'invalid_user_id', 400, 'user id is incorrect', null);
+            }        
+            let where = {};
+            where = {createdBy: id};
+
+            Toy.hasMany(Asset, {
+                foreignKey: "toyid",               
+              });
+            Asset.belongsTo(Toy, {
+                foreignKey: "toyid",              
+              });
+            Toy.hasMany(Tag_Toy, {
+                foreignKey: "toyid",               
+              });
+            Tag_Toy.belongsTo(Toy, {
+                foreignKey: "toyid",              
+              });
+
+            Toy.findAll({
+                where: where,   
+                include: [{                     
+                    model: Tag_Toy,                                                            
+                    },
+                    {
+                    model: Asset,                   
+                    },
+                   ],
+            }).then(result=>{// result kq trả về từ câu query 
+                "use strict";
+                if(result){
+                    console.log(result);
+                    return callback(null, null, 200, null, result);
+                }else{
+                    return callback(1, 'invalid_toy', 403, null, null);
+                }
+            });
+        }catch(error){
+            return callback(1, 'get_one_toy_fail', 400, error, null);
+        }
+    },  
    
     getStatistic: function(accessUserId, accessUserType, callback) { 
         try {

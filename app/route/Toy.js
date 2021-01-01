@@ -10,5 +10,6 @@ module.exports = function (app) {
     app.get('/v1/get_new_toy', ToyCtrl.get_new_toy);
     app.put('/v1/auth/toy/:id', ToyCtrl.update);
     app.get('/v1/toy/:id', ToyCtrl.getOne);
+    app.get('/v1/toy_by_user/:id', ToyCtrl.getToyByUser);
     app.delete('/v1/auth/toy/:id', ToyCtrl.delete);
 };

@@ -18,7 +18,7 @@ module.exports = {
         const accessUserId = req.body.accessUserId || '';
         const accessUserType = req.body.accessUserType || '';
         const value = req.body  || '';
-        const asset = req.files || '';      
+        const asset = req.files || ''; 
     
         ToyManager.create(accessUserId, accessUserType, value,asset, function (errorCode, errorMessage, httpCode, errorDescription, Toy) {
             if (errorCode) {
@@ -82,6 +82,19 @@ module.exports = {
                 return Rest.sendSuccessOne(res, result, httpCode);
             })
         }
+    },
+    getToyByUser: function (req, res) {
+        let accessUserId = req.query.accessUserId || '';
+        let accessUserType = req.query.accessUserType || '';
+        let id = req.params.id || '';
+      
+            ToyManager.getToyByUser(accessUserId, accessUserType, id, function (errorCode, errorMessage, httpCode, errorDescription, result) {
+                if (errorCode) {
+                    return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
+                }
+                return Rest.sendSuccessOne(res, result, httpCode);
+            })
+        
     },
 
     getAll: function (req, res) {

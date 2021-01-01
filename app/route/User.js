@@ -136,7 +136,7 @@ module.exports = function (app) {
      *     }
      */
     app.get('/v1/auth/users/getOnly', UserCtrl.getOneOnly);
-    app.get('/v1/auth/users/:id', UserCtrl.getOne);
+    app.get('/v1/users/:id', UserCtrl.getOne);
     app.get('/v1/auth/users/statistic', UserCtrl.getOne);
     /**
      * @api {GET} /v1/auth/users Get List

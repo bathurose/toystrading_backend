@@ -30,11 +30,11 @@ module.exports = {
                 return callback(1, 'invalid_user_type', 400, null, null);
             }
     
-            let attributes = ['id','email', 'userName','phone','ecoin','rate','type', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'];
+           
 
             User.findOne({
                 where: {id: id},
-                attributes: attributes,
+               
             }).then(result=>{// result kq trả về từ câu query 
                 "use strict";
                 if(result){
@@ -259,7 +259,6 @@ module.exports = {
     },
     updateOnly: function (accessUserId, accessUserType, updateData, callback) {
         try {
-            console.log(updateData.phone)
             let queryObj = {};
             let where = {};
             queryObj.updatedAt = new Date();
@@ -324,16 +323,7 @@ module.exports = {
                     return callback(2, 'userName_incorrect', 400, error, null);
                 }  
              }
-            if (updateData.email != null)
-            {
-                if ( Validator.isEmail(updateData.email)) {
-                    queryObj.email = updateData.email;
-                }
-                else
-                {
-                    return callback(2, 'email_incorrect', 400, error, null);
-                }  
-            }
+         
             if (updateData.phone != null)
             {
                 if ( Validator.isLength(updateData.phone, {min: 10, max: 12})) {      

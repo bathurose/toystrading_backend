@@ -87,7 +87,7 @@ module.exports = {
     },
 
 
-    getAll: function(accessUserId, accessUserType, query, callback){
+    getAll: async function(accessUserId, accessUserType, query, callback){
         try {
             if ( accessUserType == Constant.USER_TYPE.MODERATOR ) {
                 return callback(1, 'invalid_user_type', 400, null, null);
@@ -127,54 +127,46 @@ module.exports = {
                 var from = new Date(query.from);
                 where.createdAt= {[Op.lt]: to,[Op.gt]: from};
             }
-            Toy.hasMany(Transaction, {
-                as: 'Toys',
+            Toy.hasMany(Transaction, {      
                 foreignKey: {
                   name: 'toyid',     
                 }              
               });
-            Transaction.belongsTo(Toy, {
-                as: 'Toys',
+            Transaction.belongsTo(Toy, {             
                 foreignKey: {
                   name: 'toyid',
                 }              
               });
-     
-            User.hasMany(Transaction, {
-                as: 'Buyer',
-                foreignKey: {
-                  name: 'buyer',     
-                }              
+            User.hasMany(Toy, {              
+                foreignKey: 'createdBy',                            
               });
-            Transaction.belongsTo(User, {
-                as: 'Buyer',
-                foreignKey: {
-                  name: 'buyer',
-                }              
+            Toy.belongsTo(User, { foreignKey: 'createdBy' });       
+            User.hasMany(Transaction, {                  
+                foreignKey: 
+                  'buyer',                          
               });
-              User.hasMany(Transaction, {
-                as: 'Seller',
-                foreignKey: {
-                  name: 'seller',     
-                }             
-              });
-            Transaction.belongsTo(User, {
-                as: 'Seller',
-                foreignKey: {
-                  name: 'seller',     
-                }              
-              });
-             
+    
+            Transaction.belongsTo(User,{
+                foreignKey: 'buyer',        
+              });               
             let offset = perPage * (page - 1);
-            Transaction.findAndCountAll({
-                include: [{                     
-                    all:true                                                         
-                  } 
-                ],
+                            
+            await Transaction.findAndCountAll({              
+                include:[{           
+                        model: User,                                                                           
+                    },{
+                    model: Toy,
+                    include:[
+                        {
+                            model :User,
+                        }
+                    ]
+                    }] ,                 
                     where: where,
                     limit: perPage,
                     offset: offset,
-                    order: sort
+                    order: sort,
+                    required: true 
                 })
                 .then((data) => {
                     let pages = Math.ceil(data.count / perPage);

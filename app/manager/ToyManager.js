@@ -16,6 +16,7 @@ const Asset = Models.Asset;
 const Toy = Models.Toy;
 const Category = Models.Category;
 const Tag_Toy = Models.Tag_Toy;
+const User = Models.User;
 const fs = require("fs");
 const Cloudinary = require('../middlewares/Cloudinary');
 const { ok } = require('assert');
@@ -464,6 +465,10 @@ module.exports = {
             let where = {};
             where = {id: id};
             console.log(where);
+            User.hasMany(Toy, {              
+                foreignKey: 'createdBy',                            
+              });
+            Toy.belongsTo(User, { foreignKey: 'createdBy' });      
             Toy.hasMany(Asset, {
                 foreignKey: "toyid",               
               });
@@ -484,7 +489,10 @@ module.exports = {
                     },
                     {
                     model: Asset,                   
-                    }],
+                    },
+                    {                     
+                    model: User,                                                            
+                    },],
             }).then(result=>{// result kq trả về từ câu query 
                 "use strict";
                 if(result){

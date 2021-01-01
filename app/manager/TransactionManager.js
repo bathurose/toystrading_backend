@@ -153,7 +153,7 @@ module.exports = {
                             
             await Transaction.findAndCountAll({              
                 include:[{           
-                        model: User,                                                                           
+                        model: User,                                                                          
                     },{
                     model: Toy,
                     include:[

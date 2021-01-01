@@ -39,6 +39,7 @@ module.exports = {
                 where:{id:transData.toyid},
             }).then(function(ecoin_toy){ 
                 "use strict";
+                queryObj.seller = ecoin_toy.dataValues.createdBy;
                 User.findOne({
                     where:{id:accessUserId},
                 }).then(function(ecoin_user){ 
@@ -67,8 +68,7 @@ module.exports = {
             });
 
             let queryObj = {};
-            queryObj.buyer = accessUserId;
-            queryObj.seller = transData.seller;
+            queryObj.buyer = accessUserId;          
             queryObj.toyid = transData.toyid;
             queryObj.status='REQUEST';
             queryObj.createdBy = accessUserId;

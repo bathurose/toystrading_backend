@@ -284,54 +284,81 @@ module.exports = {
 
 
     update: function (accessUserId, accessUserType, toyId, toyData, assetData, callback) {
-        try {          
+        try {        
+            let queryObj = {};  
             if ( !( Pieces.VariableBaseTypeChecking(toyId,'string')
                     && Validator.isInt(toyId) )
                 && !Pieces.VariableBaseTypeChecking(toyId,'number') ){
                 return callback(1, 'invalid_category_id', 400, 'category id is incorrect', null);
             }
             let temp = parseInt(toyData.ecoin);
-        
-            if ( !Pieces.VariableBaseTypeChecking(toyData.toyName, 'string')
-            || !Validator.isLength(toyData.toyName, {min: 5, max: 128}) ) {
-                return callback(1, 'invalid_toy_name', 400, 'length 4-128', null);             
+            if (toyData.toyName != null)
+            {
+                if ( !Pieces.VariableBaseTypeChecking(toyData.toyName, 'string')
+                || !Validator.isLength(toyData.toyName, {min: 5, max: 128}) ) {
+                    return callback(1, 'invalid_toy_name', 400, 'length 4-128', null);             
+                }
+                else
+                {
+                    queryObj.toyName= toyData.toyName;
+                }
             }
             
+            if (toyData.ecoin != null)
+            {
             if (!Pieces.VariableBaseTypeChecking(temp,'number'))
             {
                 return callback(1, 'invalid_ecoin', 400, 'ecoin is not type int', null);
+            }
+            else
+            {
+                queryObj.ecoin = toyData.ecoin;
             }
             if (toyData.ecoin > 200000 )
             {
                 return callback(1, 'invalid_ecoin', 400, 'ecoin is less than 200000', null);
             }
-            //Asset
-            if (assetData==undefined)
+            else
             {
-            return callback(1, 'You must select file', 400, null, null);
-            }    
+                queryObj.ecoin = toyData.ecoin;
+            }
+            }
+            //Asset
+            // if (assetData==undefined)
+            // {
+            // return callback(1, 'You must select file', 400, null, null);
+            // }    
             let asssetObj = [];                              
             assetData.forEach((value) => {
                 asssetObj.push(value.path);              
             });
 
+            
             let queryObj_del = [];     
-                toyData.assetDel.forEach((value) => {
-                    queryObj_del.push(value.substr(-34, 30));              
-            });   
+            //     toyData.assetDel.forEach((value) => {
+            //         queryObj_del.push(value.substr(-34, 30));              
+            // });   
+            let arr_asset_del;
+            if (toyData.assetDel != null)
+            {
+                arr_asset_del = JSON.parse( JSON.stringify(toyData.assetDel));           
+                arr_asset_del.forEach((value) => {
+                    queryObj_del.push(value.url.substr(-34, 30));              
+                });   
+            }
          
             let d = "" ;
             //Asset
             let where ={}
-            let queryObj = {};
+            
             let tagObj = {};
       
-            queryObj.toyName= toyData.toyName;
+           
             queryObj.sex = toyData.sex;
             queryObj.age = toyData.age;
             queryObj.city = toyData.city;
             queryObj.condition = toyData.condition;
-            queryObj.ecoin = toyData.ecoin;
+           
             queryObj.description = toyData.description
             queryObj.category = toyData.category;
             queryObj.updatedAt = new Date();
@@ -353,9 +380,23 @@ module.exports = {
                             "use strict";
                             return callback(2, 'delete_tag_fail', 400, error, null);
                         }); 
-                        for (let i =0 ;i<toyData.tag.length;i++)
+                        // for (let i =0 ;i<toyData.tag.length;i++)
+                        // {
+                        //     tagObj.tag=toyData.tag[i];
+                        //     tagObj.toyid=toyId;
+                        //     tagObj.createdBy = accessUserId;
+                        //     tagObj.updatedBy = accessUserId;  
+                        //     Tag_Toy.create(tagObj).then(tagtoy=>{  
+                        //         "use strict";                          
+                        //     }).catch(function(error){
+                        //         "use strict";
+                        //         return callback(2, 'create_asset_fail', 400, error, null);
+                        //     });  
+                        // }
+                        let arrTag = JSON.parse( JSON.stringify(toyData.tag));
+                        for (let i =0 ;i<arrTag.length;i++)
                         {
-                            tagObj.tag=toyData.tag[i];
+                            tagObj.tag=arrTag[i].id;
                             tagObj.toyid=toyId;
                             tagObj.createdBy = accessUserId;
                             tagObj.updatedBy = accessUserId;  
@@ -367,23 +408,32 @@ module.exports = {
                             });  
                         }
                 }
-                             
-                Cloudinary.deleteMutiple(queryObj_del,result_del => {
-             
+            
+                Cloudinary.deleteMutiple(queryObj_del,result_del => {          
                     if (result_del.result === "ok")
                     {
-                        for (let i = 0; i<toyData.assetDel.length;i++)
-                        {
+                        // for (let i = 0; i<toyData.assetDel.length;i++)
+                        // {
                             
+                        //     Asset.destroy({
+                        //         where: {url:toyData.assetDel[i]}
+                        //     }).catch(function(error){
+                        //         "use strict";
+                        //         return callback(2, 'delete_asset_fail', 402, error, null);
+                        //     }); 
+                        // }
+                        for (let i = 0; i < arr_asset_del.length;i++)
+                        {                         
                             Asset.destroy({
-                                where: {url:toyData.assetDel[i]}
+                                where: {url:arr_asset_del[i].url}
                             }).catch(function(error){
                                 "use strict";
-                                return callback(2, 'create_asset_fail', 402, error, null);
+                                return callback(2, 'delete_asset_fail', 402, error, null);
                             }); 
                         }
                     }
                 })   
+                
                 Cloudinary.uploadMutiple(asssetObj,result => {
                     const convertedData = result.map(arrObj => {
                         return{
@@ -400,11 +450,12 @@ module.exports = {
                     });    
                 })              
                 return callback(null, null, 200, null, result);              
-
+                
             }).catch(function(error){
                 "use strict";
                 return callback(2, 'update_toy_fail', 400, error, null);
             });
+            
         }catch(error){
             return callback(3, 'update_toy_fail', 400, error, null);
         }

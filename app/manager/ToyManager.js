@@ -281,6 +281,39 @@ module.exports = {
             return callback(1, 'get_all_toy_fail', 400, error, null);
         }
     },
+    get_toy_byid: function(accessUserId,callback){
+        try {            
+            // Toy.hasMany(Asset);
+            Toy.hasMany(Asset, {
+                foreignKey: "toyid",               
+              });
+            Asset.belongsTo(Toy, {
+                foreignKey: "toyid",              
+              });
+            Toy.hasMany(Tag_Toy, {
+                foreignKey: "toyid",               
+              });
+            Tag_Toy.belongsTo(Toy, {
+                foreignKey: "toyid",              
+              });
+            Toy.findAll({                             
+                    include: [{                     
+                        model: Tag_Toy,                                                                        
+                      },
+                      {
+                        model: Asset,                   
+                      }],
+                    where :{createdBy : accessUserId},
+                })
+                .then((data) => {         
+                    return callback(null, null, 200, null,data);
+                }).catch(function (error) {
+                    return callback(1, 'find_and_count_all_toy_fail', 420, error, null);
+                });
+        }catch(error){
+            return callback(1, 'get_all_toy_fail', 400, error, null);
+        }
+    },
 
 
     update: function (accessUserId, accessUserType, toyId, toyData, assetData, callback) {

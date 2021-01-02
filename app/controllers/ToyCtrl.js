@@ -118,4 +118,16 @@ module.exports = {
             }
         });
     },   
+    get_toy_byid: function (req, res) {     
+        let accessUserId = req.query.accessUserId || '';
+        let accessUserType = req.query.accessUserType || ''; 
+        ToyManager.get_toy_byid(accessUserId, function (errorCode, errorMessage, httpCode, errorDescription, result) {
+       
+            if (errorCode) {
+                return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
+            } else {
+                return Rest.sendSuccessOne(res, result, httpCode);
+            }
+        });
+    },   
 };

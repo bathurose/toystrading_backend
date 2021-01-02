@@ -68,6 +68,34 @@ module.exports = {
         });
         
     },
+    getAllBuy: function (req, res) {
+        let accessUserId = req.query.accessUserId || '';
+        let accessUserType = req.query.accessUserType || '';
+     
+
+        TransactionManager.getAllBuy(accessUserId, accessUserType,  function (errorCode, errorMessage, httpCode, errorDescription, results) {
+            if (errorCode) {
+                return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
+            } else {
+                return Rest.sendSuccessOne(res, results, httpCode);
+            }
+        });
+        
+    },
+    getAllSell: function (req, res) {
+        let accessUserId = req.query.accessUserId || '';
+        let accessUserType = req.query.accessUserType || '';
+     
+
+        TransactionManager.getAllSell(accessUserId, accessUserType,  function (errorCode, errorMessage, httpCode, errorDescription, results) {
+            if (errorCode) {
+                return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
+            } else {
+                return Rest.sendSuccessOne(res, results, httpCode);
+            }
+        });
+        
+    },
     getAllByUser: function (req, res) {
         let accessUserId = req.query.accessUserId || '';
         let accessUserType = req.query.accessUserType || '';

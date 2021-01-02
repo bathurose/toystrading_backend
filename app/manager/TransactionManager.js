@@ -16,6 +16,7 @@ const { where } = require('sequelize');
 const Transaction = Models.Transaction;
 const Toy = Models.Toy;
 const User = Models.User;
+const Asset = Models.Asset;
 
 
 module.exports = {
@@ -154,7 +155,6 @@ module.exports = {
             return callback(2, 'create_transaction_fail', 400, error, null);
         }
     },
-
 
     getAll: async function(accessUserId, accessUserType, query, callback){
         try {
@@ -514,6 +514,98 @@ module.exports = {
             return callback(2, 'get_transaction_fail', 400, error, null);
         }
     },
+
+    getAllBuy: function(accessUserId, accessUserType, callback){
+        try {
+            let where={};
+            where.buyer=accessUserId;
+            
+            Toy.hasMany(Asset, {
+                foreignKey: "toyid",               
+              });
+            Asset.belongsTo(Toy, {
+                foreignKey: "toyid",              
+              });
+            Toy.hasMany(Transaction, {
+                foreignKey: "toyid",               
+              });
+            Transaction.belongsTo(Toy, {
+                foreignKey: "toyid",              
+              });
+            User.hasMany(Transaction, {
+                foreignKey: "seller",               
+              });
+            Transaction.belongsTo(User, {
+                foreignKey: "seller",              
+              });
+            Transaction.findOne({
+                    where: where,
+                    include: [{                     
+                        model: Toy,   
+                        include: [
+                          {
+                            model: Asset,                   
+                          }],                                                       
+                      },
+                      {
+                        model: User,                   
+                      }],
+                })
+                .then((data) => {
+                    return callback(null, null, 200, null, data);
+                }).catch(function (error) {
+                    return callback(1, 'get_transaction_fail', 420, error, null);
+                });
+        }catch(error){
+            return callback(2, 'get_transaction_fail', 400, error, null);
+        }
+    },
+
+    getAllSell: function(accessUserId, accessUserType, callback){
+        try {
+            let where={};
+            where.seller=accessUserId;
+            Toy.hasMany(Asset, {
+                foreignKey: "toyid",               
+              });
+            Asset.belongsTo(Toy, {
+                foreignKey: "toyid",              
+              });
+            Toy.hasMany(Transaction, {
+                foreignKey: "toyid",               
+              });
+            Transaction.belongsTo(Toy, {
+                foreignKey: "toyid",              
+              });
+            User.hasMany(Transaction, {
+                foreignKey: "seller",               
+              });
+            Transaction.belongsTo(User, {
+                foreignKey: "seller",              
+              });
+            Transaction.findOne({
+                    where: where,
+                    include: [{                     
+                        model: Toy,   
+                        include: [
+                          {
+                            model: Asset,                   
+                          }],                                                       
+                      },
+                      {
+                        model: User,                   
+                      }],
+                })
+                .then((data) => {
+                    return callback(null, null, 200, null, data);
+                }).catch(function (error) {
+                    return callback(1, 'get_transaction_fail', 420, error, null);
+                });
+        }catch(error){
+            return callback(2, 'get_transaction_fail', 400, error, null);
+        }
+    },
+
 
    
     // // --------- others ----------

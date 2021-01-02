@@ -578,10 +578,10 @@ module.exports = {
                 foreignKey: "toyid",              
               });
             User.hasMany(Transaction, {
-                foreignKey: "seller",               
+                foreignKey: "buyer",               
               });
             Transaction.belongsTo(User, {
-                foreignKey: "seller",              
+                foreignKey: "buyer",              
               });
             Transaction.findOne({
                     where: where,

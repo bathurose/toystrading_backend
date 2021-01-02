@@ -18,9 +18,11 @@ module.exports = {
         const accessUserId = req.body.accessUserId || '';
         const accessUserType = req.body.accessUserType || '';
         const value = req.body|| '';
+   
 
         TransactionManager.create(accessUserId, accessUserType, value, function (errorCode, errorMessage, httpCode, errorDescription, Transaction) {
             if (errorCode) {
+
                 return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
             } else {
                 let resData = {};

@@ -21,66 +21,135 @@ const User = Models.User;
 module.exports = {
     create : function (accessUserId,accessUserType, transData, callback) {
         try {
-            let queryObj = {};
-            //count trans
+                      
             Transaction.count({
-                where:{buyer:accessUserId},
-            }).then(function(total){ 
+                where:{
+                    buyer:accessUserId,
+                    [Op.or]: [{ status: "REQUEST" }, { status: "ACCEPTED" }], 
+                },
+            }).then(total=>{ 
                 "use strict";
-                if (total >0 ){
-                    return callback(1, 'You have already had a transaction',400 , null);
-                }               
+                if (total > 0 )
+                {
+                    return callback(1, 'You have already had a transaction', 400, null, null);
+                }            
+                else
+                {
+                    Toy.findOne({
+                        where:{id:transData.toyid},
+                    }).then(function(ecoin_toy){ 
+                        "use strict";
+                        User.findOne({
+                            where:{id:accessUserId},
+                        }).then(function(ecoin_user){ 
+                            "use strict";
+                            if (ecoin_toy.dataValues.ecoin > ecoin_user.dataValues.ecoin ){
+                                return callback(1, 'You do not have enough ecoin',400 ,null, null);
+                            }    
+                            else
+                            {                               
+                            Toy.update(
+                                {
+                                    status : 'PENDING',
+                                    updatedAt : new Date()
+                                },
+                                {
+                                    where:{id:transData.toyid}
+                                }
+                            ).catch(function(error){
+                                "use strict";
+                                return callback(1, 'update toy fail', 400, error, null);
+                            }); 
+                            }      
+                            let queryObj = {};
+                            queryObj.seller = ecoin_toy.dataValues.createdBy;
+                            queryObj.buyer = accessUserId;
+                            queryObj.toyid = transData.toyid;
+                            queryObj.status='REQUEST';
+                            queryObj.createdBy = accessUserId;
+                            queryObj.updatedBy = accessUserId;
+                            Transaction.create(queryObj).then(result=>{
+                                "use strict";
+                                return callback(null, null, 200, null, result);
+                            }).catch(function(error){
+                                "use strict";
+                                return callback(1, 'create_transaction_fail', 400, error, null);
+                            });         
+                        }).catch(function(error){
+                            "use strict";
+                            return callback(1, 'find user fail', 400, error, null);
+                        });             
+                    }).catch(function(error){
+                        "use strict";
+                        return callback(1, 'find toy fail', 400, error, null);
+                    });
+                }   
             }).catch(function(error){
                 "use strict";
                 return callback(1, 'count_transaction_fail', 400, error, null);
             });
-           
+   
             //compare ecoin
-            Toy.findOne({
-                where:{id:transData.toyid},
-            }).then(function(ecoin_toy){ 
-                "use strict";
-                queryObj.seller = ecoin_toy.dataValues.createdBy;
-                User.findOne({
-                    where:{id:accessUserId},
-                }).then(function(ecoin_user){ 
-                    "use strict";
-                    if (ecoin_toy.dataValues.ecoin > ecoin_user.dataValues.ecoin ){
-                        return callback(1, 'You do not have enough ecoin',400 , null);
-                    }               
-                }).catch(function(error){
-                    "use strict";
-                    return callback(1, 'find user fail', 400, error, null);
-                });             
-            }).catch(function(error){
-                "use strict";
-                return callback(1, 'find toy fail', 400, error, null);
-            });
-            Toy.update(
-                {
-                    status : 'PENDING',
-                    updatedAt : new Date()
-                },
-                {
-                    where:{id:transData.toyid}
-                }
-            ).catch(function(error){
-                "use strict";
-                return callback(1, 'update toy fail', 400, error, null);
-            });   
-            queryObj.buyer = accessUserId;
-            queryObj.toyid = transData.toyid;
-            queryObj.status='REQUEST';
-            queryObj.createdBy = accessUserId;
-            queryObj.updatedBy = accessUserId;
+            // Toy.findOne({
+            //     where:{id:transData.toyid},
+            // }).then(function(ecoin_toy){ 
+            //     "use strict";
+            //     User.findOne({
+            //         where:{id:accessUserId},
+            //     }).then(function(ecoin_user){ 
+            //         "use strict";
+            //         if (ecoin_toy.dataValues.ecoin > ecoin_user.dataValues.ecoin ){
+            //             return callback(1, 'You do not have enough ecoin',400 ,null, null);
+            //         }               
+            //     }).catch(function(error){
+            //         "use strict";
+            //         return callback(1, 'find user fail', 400, error, null);
+            //     });             
+            // }).catch(function(error){
+            //     "use strict";
+            //     return callback(1, 'find toy fail', 400, error, null);
+            // });
+ 
+            
+            // Toy.update(
+            //     {
+            //         status : 'PENDING',
+            //         updatedAt : new Date()
+            //     },
+            //     {
+            //         where:{id:transData.toyid}
+            //     }
+            // ).catch(function(error){
+            //     "use strict";
+            //     return callback(1, 'update toy fail', 400, error, null);
+            // }); 
 
-            Transaction.create(queryObj).then(result=>{
-                "use strict";
-                return callback(null, null, 200, null, result);
-            }).catch(function(error){
-                "use strict";
-                return callback(1, 'create_transaction_fail', 400, error, null);
-            });
+            
+      
+            // Toy.findOne({
+            //     where:{id:transData.toyid},
+            // }).then(function(toy){ 
+            //     "use strict";         
+            //     let queryObj = {};
+            //     queryObj.seller = toy.dataValues.createdBy;
+            //     queryObj.buyer = accessUserId;
+            //     queryObj.toyid = transData.toyid;
+            //     queryObj.status='REQUEST';
+            //     queryObj.createdBy = accessUserId;
+            //     queryObj.updatedBy = accessUserId;
+            //     Transaction.create(queryObj).then(result=>{
+            //         "use strict";
+            //         return callback(null, null, 200, null, result);
+            //     }).catch(function(error){
+            //         "use strict";
+            //         return callback(1, 'create_transaction_fail', 400, error, null);
+            //     });               
+            // }).catch(function(error){
+            //     "use strict";
+            //     return callback(1, 'find toy fail', 400, error, null);
+            // });
+
+           
         }catch(error){
             return callback(2, 'create_transaction_fail', 400, error, null);
         }

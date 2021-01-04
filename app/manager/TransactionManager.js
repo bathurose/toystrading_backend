@@ -384,11 +384,13 @@ module.exports = {
                                         "use strict";       
                                     User.update(
                                         {
-                                            ecoin:buyer.dataValues.ecoin-toy.dataValues.ecoin},
+                                            ecoin:buyer.dataValues.ecoin-toy.dataValues.ecoin,
+                                            updatedAt : new Date()
+                                        },
                                             {where: 
                                                 {
                                                     id:result.dataValues.buyer,
-                                                    updatedAt : new Date()
+                                                    
                                                 }
                                         }
                                         ).then(data=>{  
@@ -409,11 +411,13 @@ module.exports = {
                                         "use strict";       
                                     User.update(
                                         {
-                                            ecoin:seller.dataValues.ecoin+toy.dataValues.ecoin},
+                                            ecoin:seller.dataValues.ecoin+toy.dataValues.ecoin,
+                                            updatedAt : new Date()
+                                        },
                                             {where: 
                                                 {
                                                     id:result.dataValues.seller,
-                                                    updatedAt : new Date()
+                                                  
                                                 }
                                         }
                                         ).then(data=>{  

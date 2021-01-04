@@ -541,7 +541,7 @@ module.exports = {
             Transaction.belongsTo(User, {
                 foreignKey: "seller",              
               });
-            Transaction.findOne({
+            Transaction.findAll({
                     where: where,
                     include: [{                     
                         model: Toy,   
@@ -586,7 +586,7 @@ module.exports = {
             Transaction.belongsTo(User, {
                 foreignKey: "buyer",              
               });
-            Transaction.findOne({
+            Transaction.findAll({
                     where: where,
                     include: [{                     
                         model: Toy,   

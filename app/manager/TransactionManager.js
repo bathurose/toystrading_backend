@@ -454,12 +454,15 @@ module.exports = {
             {
                 Transaction.findOne(
                     {where: where}).then(result=>{
-                Toy.update(
-                    {status:'READY'},
-                    { where: 
-                        {
-                            id:result.dataValues.toyid,
-                            updatedAt : new Date()
+                     Toy.update(
+                    {
+                        status:'READY',
+                        updatedAt : new Date()
+                    },
+                    { 
+                        where: 
+                        {                     
+                            id:result.dataValues.toyid                         
                         }
                     }
                     ).then(toy=>{  

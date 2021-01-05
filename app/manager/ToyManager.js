@@ -639,10 +639,62 @@ module.exports = {
    
     getStatistic: function(accessUserId, accessUserType, callback) { 
         try {
+            if ( accessUserType == Constant.USER_TYPE.MODERATOR ) {
+                return callback(1, 'user is not right', 400, null, null);
+            }
             let final = {};
             final = { total: 0};
             Toy.count({
                 where:{},
+            }).then(function(total){ // giống trên 
+                "use strict";
+                final.total = total;
+                return callback(null, null, 200, null, final);
+            }).catch(function(error){
+                "use strict";
+                return callback(1, 'count_toy_fail', 400, error, null);
+            });
+        }catch(error){
+            return callback(2, 'statistic_toy_fail', 400, error, null);
+        }
+    },
+    getSumEcoin: function(accessUserId, accessUserType, callback) { 
+        try {
+            if ( accessUserType == Constant.USER_TYPE.MODERATOR ) {
+                return callback(1, 'user is not right', 400, null, null);
+            }
+            let final = {};
+            final = { total: 0};
+            Toy.sum(
+                'ecoin',
+                {
+                where:{},
+            }).then(function(total){ // giống trên 
+                "use strict";
+                final.total = total;
+                return callback(null, null, 200, null, final);
+            }).catch(function(error){
+                "use strict";
+                return callback(1, 'count_toy_fail', 400, error, null);
+            });
+        }catch(error){
+            return callback(2, 'statistic_toy_fail', 400, error, null);
+        }
+    },
+
+    getSumEcoinSold: function(accessUserId, accessUserType, callback) { 
+        try {
+            if ( accessUserType == Constant.USER_TYPE.MODERATOR ) {
+                return callback(1, 'user is not right', 400, null, null);
+            }
+            let final = {};
+            final = { total: 0};
+            Toy.sum(
+                'ecoin',
+                {
+                where:{
+                    status : 'SOLD'
+                },
             }).then(function(total){ // giống trên 
                 "use strict";
                 final.total = total;

@@ -68,6 +68,18 @@ module.exports = {
         });
         
     },
+    getOneAna: function (req, res) {
+        let accessUserId = req.query.accessUserId || '';
+        let accessUserType = req.query.accessUserType || '';
+        TransactionManager.getOneAna(accessUserId, accessUserType, function (errorCode, errorMessage, httpCode, errorDescription, results) {
+            if (errorCode) {
+                return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
+            } else {
+                return Rest.sendSuccessOne(res, results, httpCode);
+            }
+        });
+        
+    },
     getAllBuy: function (req, res) {
         let accessUserId = req.query.accessUserId || '';
         let accessUserType = req.query.accessUserType || '';

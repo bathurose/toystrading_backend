@@ -155,6 +155,60 @@ module.exports = {
             return callback(2, 'create_transaction_fail', 400, error, null);
         }
     },
+    getOneAna: function(accessUserId, accessUserType, callback) { 
+        try {
+            let final = {};
+            final = {request: 0, total: 0,done: 0,accepted: 0,cancel: 0};
+            if ( accessUserType == Constant.USER_TYPE.MODERATOR ) {
+                return callback(1, 'invalid_user_type', 400, null, null);
+            }
+            Transaction.count({
+                where:{},
+            }).then(function(total){ // giống trên 
+                "use strict";
+                final.total = total;
+                Transaction.count({
+                    where:{status: 'REQUEST'},
+                }).then(function(request){
+                    final.request = request;           
+                }).catch(function(error){
+                    "use strict";
+                    return callback(1, 'count_user_fail', 400, error, null);
+                });
+                Transaction.count({
+                    where:{status: 'ACCEPTED'},
+                }).then(function(accepted){
+                    final.accepted = accepted;
+                  
+                }).catch(function(error){
+                    "use strict";
+                    return callback(1, 'count_user_fail', 400, error, null);
+                });
+                Transaction.count({
+                    where:{status: 'CANCEL'},
+                }).then(function(cancel){
+                    final.cancel = cancel;
+                }).catch(function(error){
+                    "use strict";
+                    return callback(1, 'count_user_fail', 400, error, null);
+                });
+                Transaction.count({
+                    where:{status: 'DONE'},
+                }).then(function(done){
+                    final.done = done;
+                    return callback(null, null, 200, null, final);
+                }).catch(function(error){
+                    "use strict";
+                    return callback(1, 'count_user_fail', 400, error, null);
+                });
+            }).catch(function(error){
+                "use strict";
+                return callback(1, 'count_user_fail', 400, error, null);
+            });
+        }catch(error){
+            return callback(2, 'statistic_user_fail', 400, error, null);
+        }
+    },
 
     getAll: async function(accessUserId, accessUserType, query, callback){
         try {

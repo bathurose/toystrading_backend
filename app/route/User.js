@@ -137,7 +137,7 @@ module.exports = function (app) {
      */
     app.get('/v1/auth/users/getOnly', UserCtrl.getOneOnly);
     app.get('/v1/users/:id', UserCtrl.getOne);
-    app.get('/v1/auth/users/statistic', UserCtrl.getOne);
+    app.get('/v1/auth/users/statistic', UserCtrl.getOneAna);
     /**
      * @api {GET} /v1/auth/users Get List
      * @apiVersion 1.0.0

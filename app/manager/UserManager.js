@@ -65,7 +65,7 @@ module.exports = {
         }
     },
     // thống kê user, toys
-    getStatistic: function(accessUserId, accessUserType, callback) { 
+    getStatisticNew: function(accessUserId, accessUserType, callback) { 
         try {
             let final = {};
             final = {activated: 0, total: 0};

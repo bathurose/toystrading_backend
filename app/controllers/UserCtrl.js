@@ -47,6 +47,19 @@ module.exports = {
         
     },
 
+    getOneAna: function (req, res) {
+        let accessUserId = req.query.accessUserId || '';
+        let accessUserType = req.query.accessUserType || '';
+            
+        UserManager.getStatisticNew(accessUserId, accessUserType, function (errorCode, errorMessage, httpCode, errorDescription, result) {
+            if (errorCode) {
+                return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
+            }
+            return Rest.sendSuccessOne(res, result, httpCode);
+        })
+       
+    },
+    
     getOne: function (req, res) {
         let accessUserId = req.query.accessUserId || '';
         let accessUserType = req.query.accessUserType || '';

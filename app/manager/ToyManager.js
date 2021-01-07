@@ -15,6 +15,7 @@ const { INTEGER, NUMBER, and } = require('sequelize');
 const Asset = Models.Asset;
 const Toy = Models.Toy;
 const Category = Models.Category;
+const Tag = Models.Tag;
 const Tag_Toy = Models.Tag_Toy;
 const User = Models.User;
 const fs = require("fs");
@@ -705,6 +706,55 @@ module.exports = {
             });
         }catch(error){
             return callback(2, 'statistic_toy_fail', 400, error, null);
+        }
+    },
+
+    getAnalysis: function(accessUserId, accessUserType, callback) { 
+        try {
+      
+            let final = {};
+            final = {ready: 0, total: 0,pending: 0,sold: 0};
+            if ( accessUserType == Constant.USER_TYPE.MODERATOR ) {
+                return callback(1, 'invalid_user_type', 400, null, null);
+            }
+            Toy.count({
+                where:{},
+            }).then(function(total){ // giống trên 
+                "use strict";
+                final.total = total;
+                Toy.count({
+                    where:{status: 'READY'},
+                }).then(function(ready){
+                    final.ready = ready;           
+                }).catch(function(error){
+                    "use strict";
+                    return callback(1, 'count_user_fail', 400, error, null);
+                });
+                Toy.count({
+                    where:{status: 'PENDING'},
+                }).then(function(pending){
+                    final.pending = pending;
+                  
+                }).catch(function(error){
+                    "use strict";
+                    return callback(1, 'count_user_fail', 400, error, null);
+                });
+             
+                Toy.count({
+                    where:{status: 'SOLD'},
+                }).then(function(sold){
+                    final.sold = sold;
+                    return callback(null, null, 200, null, final);
+                }).catch(function(error){
+                    "use strict";
+                    return callback(1, 'count_user_fail', 400, error, null);
+                });
+            }).catch(function(error){
+                "use strict";
+                return callback(1, 'count_user_fail', 400, error, null);
+            });
+        }catch(error){
+            return callback(2, 'statistic_user_fail', 400, error, null);
         }
     },
 

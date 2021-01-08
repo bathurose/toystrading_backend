@@ -119,7 +119,7 @@ module.exports = {
             }
 
             where = {[Sequelize.Op.or]:[{id: accessUserId} ,cond1] };
-
+            where.type=1; 
             if( (Pieces.VariableBaseTypeChecking(query['page'], 'string') && Validator.isInt(query['page']))
                 || (Pieces.VariableBaseTypeChecking(query['page'], 'number')) ){
                 page = parseInt(query['page']);

@@ -13,6 +13,7 @@ module.exports = function (app) {
     app.get('/v1/toy/:id', ToyCtrl.getOne);
     app.get('/v1/auth/toy/:id', ToyCtrl.getOneAna);  
     app.get('/v1/auth/toy_ana/getAnalysis', ToyCtrl.getAnalysis); 
+    app.get('/v1/toy_category/:id', ToyCtrl.getToyCategory); 
     app.get('/v1/toy_by_user/:id', ToyCtrl.getToyByUser);
     app.delete('/v1/auth/toy/:id', ToyCtrl.delete);
 };

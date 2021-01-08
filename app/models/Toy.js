@@ -15,19 +15,19 @@ let Toy = MySequelize.define('toy', {
         allowNull: false
     },
     sex: {
-        type:Sequelize.ENUM('Male', 'Female'),
+        type:Sequelize.ENUM('trai', 'gai'),
         allowNull: true
     },
     age: {
-        type:Sequelize.ENUM('1', '2'),
+        type:Sequelize.ENUM('0', '13', '46', '611', '12'),
         allowNull: true
     },
     city: {
-        type:Sequelize.ENUM('TPHCM', 'Ha Noi'),
+        type:Sequelize.ENUM('HCM', 'HN', 'CT', 'HP', 'DN'),
         allowNull: true
     },
     condition: {
-        type:Sequelize.ENUM('A', 'B'),
+        type:Sequelize.ENUM('S', 'M'),
         allowNull: true
     },
     ecoin: {
@@ -42,7 +42,7 @@ let Toy = MySequelize.define('toy', {
         type: Sequelize.ENUM('READY', 'PENDING','SOLD'),
         allowNull: false,
     },
-    category: {
+    categoryid: {
         type: Sequelize.BIGINT(20),
         allowNull: true,
         references: {

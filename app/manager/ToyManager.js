@@ -199,6 +199,12 @@ module.exports = {
             Tag_Toy.belongsTo(Toy, {
                 foreignKey: "toyid",              
               });
+            Category.hasMany(Toy, {
+                foreignKey: "categoryid",               
+              });
+            Toy.belongsTo(Category, {
+                foreignKey: "categoryid",              
+              });
             Toy.findAndCountAll({         
                     where: where,   
                    
@@ -209,6 +215,9 @@ module.exports = {
                       },
                       {
                         model: Asset,                   
+                      },
+                      {
+                        model: Category,                   
                       }],
                     limit: perPage,
                     offset: offset,
@@ -549,7 +558,7 @@ module.exports = {
             }        
             let where = {};
             where = {id: id};
-            console.log(where);
+           
             User.hasMany(Toy, {              
                 foreignKey: 'createdBy',                            
               });
@@ -566,6 +575,12 @@ module.exports = {
             Tag_Toy.belongsTo(Toy, {
                 foreignKey: "toyid",              
               });
+            Category.hasMany(Toy, {
+                foreignKey: "categoryid",               
+              });
+            Toy.belongsTo(Category, {
+                foreignKey: "categoryid",              
+              });
 
             Toy.findOne({
                 where: where,   
@@ -577,6 +592,9 @@ module.exports = {
                     },
                     {                     
                     model: User,                                                            
+                    },
+                    {                     
+                        model: Category,                                                            
                     },],
             }).then(result=>{// result kq trả về từ câu query 
                 "use strict";
@@ -659,6 +677,8 @@ module.exports = {
             return callback(2, 'statistic_toy_fail', 400, error, null);
         }
     },
+
+
     getSumEcoin: function(accessUserId, accessUserType, callback) { 
         try {
             if ( accessUserType == Constant.USER_TYPE.MODERATOR ) {
@@ -758,6 +778,62 @@ module.exports = {
         }
     },
 
+    getToyCategory: function(accessUserId, accessUserType,id, callback) { 
+        try {
+            let where ={};
+            if ( accessUserType == Constant.USER_TYPE.MODERATOR ) {
+                return callback(1, 'user is not right', 400, null, null);
+            }
+            where = { categoryid: id };    
+            User.hasMany(Toy, {              
+                foreignKey: 'createdBy',                            
+              });
+            Toy.belongsTo(User, { foreignKey: 'createdBy' });      
+            Toy.hasMany(Asset, {
+                foreignKey: "toyid",               
+              });
+            Asset.belongsTo(Toy, {
+                foreignKey: "toyid",              
+              });
+            Toy.hasMany(Tag_Toy, {
+                foreignKey: "toyid",               
+              });
+            Tag_Toy.belongsTo(Toy, {
+                foreignKey: "toyid",              
+              });
+            Category.hasMany(Toy, {
+                foreignKey: "categoryid",               
+              });
+            Toy.belongsTo(Category, {
+                foreignKey: "categoryid",              
+              });
+            Toy.findAll({
+                where:where,
+                limit: 10,
+                include: [{                     
+                    model: Tag_Toy,                                                            
+                    },
+                    {
+                    model: Asset,                   
+                    },
+                    {                     
+                    model: User,                                                            
+                    },
+                    {                     
+                        model: Category,                                                            
+                    },],
+            }).then(function(total){ // giống trên 
+                "use strict";
+               
+                return callback(null, null, 200, null, total);
+            }).catch(function(error){
+                "use strict";
+                return callback(1, 'count_toy_fail', 400, error, null);
+            });
+        }catch(error){
+            return callback(2, 'statistic_toy_fail', 400, error, null);
+        }
+    },
     // // --------- others ----------
     parseFilter: function(condition, filters) {
         try {

@@ -185,7 +185,7 @@ module.exports = {
                 sort.push(['updatedAt', 'DESC']);
             }
             let offset = perPage * (page - 1);
-    
+            where.status='READY'
             // Toy.hasMany(Asset);
             Toy.hasMany(Asset, {
                 foreignKey: "toyid",               
@@ -255,7 +255,8 @@ module.exports = {
 
     get_new_toy: function(callback){
         try {         
-             
+             let where={}
+             where.status='READY'
             
             // Toy.hasMany(Asset);
             Toy.hasMany(Asset, {
@@ -270,7 +271,8 @@ module.exports = {
             Tag_Toy.belongsTo(Toy, {
                 foreignKey: "toyid",              
               });
-            Toy.findAll({          
+            Toy.findAll({        
+                    where:where,
                     include: [{                     
                         model: Tag_Toy,                                                                        
                       },
@@ -784,6 +786,7 @@ module.exports = {
             if ( accessUserType == Constant.USER_TYPE.MODERATOR ) {
                 return callback(1, 'user is not right', 400, null, null);
             }
+            where.status='READY'
             where = { categoryid: id };    
             User.hasMany(Toy, {              
                 foreignKey: 'createdBy',                            

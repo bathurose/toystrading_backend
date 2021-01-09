@@ -170,6 +170,17 @@ module.exports = {
             }
         });
     }, 
+    getToyAdmin: function (req, res) {
+  
+        let queryContent = req.query || '';       
+        ToyManager.getToyAdmin(queryContent, function (errorCode, errorMessage, httpCode, errorDescription, results) {
+            if (errorCode) {
+                return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
+            } else {
+                return Rest.sendSuccessOne(res, results, httpCode);
+            }
+        });
+    }, 
     get_new_toy: function (req, res) {      
         ToyManager.get_new_toy( function (errorCode, errorMessage, httpCode, errorDescription, result) {
        

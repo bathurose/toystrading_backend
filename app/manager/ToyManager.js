@@ -253,6 +253,140 @@ module.exports = {
         }
     },
 
+    getToyAdmin: function(query, callback){
+        try {
+            let where ={};
+            let page = 1;
+            let perPage = Constant.DEFAULT_PAGING_SIZE
+            let sort = [];
+            this.parseFilter(where, query.filter);  
+            // WHERE 
+            if( Pieces.VariableBaseTypeChecking(query.toyName, 'string') ){
+                where.toyName = {[Sequelize.Op.like]:query.toyName +"%"};
+            }           
+            if( Pieces.VariableBaseTypeChecking(query.sex, 'string') ){
+                where.sex = query.sex;
+            }
+            if( Pieces.VariableBaseTypeChecking(query.age, 'string') ){
+                where.age = query.age;
+            }
+            if( Pieces.VariableBaseTypeChecking(query.city, 'string') ){
+                where.city = query.city;
+            }
+            if( Pieces.VariableBaseTypeChecking(query.condition, 'string') ){
+                where.condition = query.condition;
+            }     
+            
+            if(query.category != undefined)
+            {
+                where.category = query.category;
+            }
+            if((query.min != undefined) && (query.max != undefined) )
+            {
+                where.ecoin= { [Sequelize.Op.between]:[query.min, query.max] };
+            }
+            if(query.createdBy != undefined)
+            {
+                where.createdBy = query.createdBy;
+            }
+            let where_tag_toy={};
+            let k;
+            if(query.tag != undefined)
+            {
+                where_tag_toy.tag = query.tag;
+                k=true;
+            }
+            else{
+                k=false;
+            }          
+            // WHERE
+            if( (Pieces.VariableBaseTypeChecking(query['page'], 'string') && Validator.isInt(query['page']))
+                || (Pieces.VariableBaseTypeChecking(query['page'], 'number')) ){
+                page = parseInt(query['page']);
+                if(page === 0){
+                    page = 1;
+                }
+            }
+            if( (Pieces.VariableBaseTypeChecking(query['perPage'], 'string') && Validator.isInt(query['perPage']))
+                || (Pieces.VariableBaseTypeChecking(query['perPage'], 'number')) ){
+                perPage = parseInt(query['perPage']);
+                if(perPage <= 0){
+                    perPage = Constant.DEFAULT_PAGING_SIZE;
+                }
+            }
+            Pieces.splitAndAssignValueForSort(sort, query['sort']);
+            if(sort.length <= 0){
+                sort.push(['updatedAt', 'DESC']);
+            }
+            let offset = perPage * (page - 1);
+      
+            // Toy.hasMany(Asset);
+            Toy.hasMany(Asset, {
+                foreignKey: "toyid",               
+              });
+            Asset.belongsTo(Toy, {
+                foreignKey: "toyid",              
+              });
+            Toy.hasMany(Tag_Toy, {
+                foreignKey: "toyid",               
+              });
+            Tag_Toy.belongsTo(Toy, {
+                foreignKey: "toyid",              
+              });
+            Category.hasMany(Toy, {
+                foreignKey: "categoryid",               
+              });
+            Toy.belongsTo(Category, {
+                foreignKey: "categoryid",              
+              });
+            Toy.findAndCountAll({         
+                    where: where,   
+                   
+                    include: [{                     
+                        model: Tag_Toy,    
+                        required :k ,
+                        where : where_tag_toy,                                                              
+                      },
+                      {
+                        model: Asset,                   
+                      },
+                      {
+                        model: Category,                   
+                      }],
+                    limit: perPage,
+                    offset: offset,
+                    order: sort
+                })
+                .then((data) => {             
+                    let pages = Math.ceil(data.count / perPage);
+                    let accounts = data.rows;
+                    let output = {
+                        data: accounts,
+                        pages: {
+                            current: page,
+                            prev: page - 1,
+                            hasPrev: false,
+                            next: (page + 1) > pages ? 0 : (page + 1),
+                            hasNext: false,
+                            total: pages
+                        },
+                        items: {
+                            begin: ((page * perPage) - perPage) + 1,
+                            end: page * perPage,
+                            total: data.count
+                        }
+                    };
+                    output.pages.hasNext = (output.pages.next !== 0);
+                    output.pages.hasPrev = (output.pages.prev !== 0);
+                    return callback(null, null, 200, null, output);
+                }).catch(function (error) {
+                    return callback(1, 'find_and_count_all_toy_fail', 420, error, null);
+                });
+        }catch(error){
+            return callback(1, 'get_all_toy_fail', 400, error, null);
+        }
+    },
+
     get_new_toy: function(callback){
         try {         
              let where={}

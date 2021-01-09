@@ -161,7 +161,8 @@ module.exports = {
 
     getAll: function (req, res) {
   
-        let queryContent = req.query || '';       
+        // let queryContent = req.query || '';   
+        let queryContent = req.body || '';  
         ToyManager.getAll(queryContent, function (errorCode, errorMessage, httpCode, errorDescription, results) {
             if (errorCode) {
                 return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);

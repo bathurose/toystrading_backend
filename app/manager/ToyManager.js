@@ -118,29 +118,48 @@ module.exports = {
 
     getAll: function(query, callback){
         try {
+        
             let where ={};
             let page = 1;
             let perPage = Constant.DEFAULT_PAGING_SIZE
             let sort = [];
             this.parseFilter(where, query.filter);  
             // WHERE 
-     
-          
-            if( Pieces.VariableBaseTypeChecking(query.toyName, 'string') ){
-                where.toyName = {[Sequelize.Op.like]:query.toyName +"%"};
-            }           
-            if( Pieces.VariableBaseTypeChecking(query.sex, 'string') ){
-                where.sex = query.sex;
+            if(query.toyName != undefined)
+            {       
+                if( Pieces.VariableBaseTypeChecking(query.toyName, 'string') ){
+                    where.toyName = {[Sequelize.Op.like]:query.toyName +"%"};
+                }   
+            } 
+            if(query.sex != undefined)
+            {         
+                if( Pieces.VariableBaseTypeChecking(query.sex, 'string') ){
+                    where.sex = query.sex;
+                }
             }
-            if( Pieces.VariableBaseTypeChecking(query.age, 'string') ){
-                where.age = query.age;
+            let arrAge_id=[];
+            if(query.age != undefined)
+            { 
+                let arrAge = JSON.parse( JSON.stringify(query.age));
+                arrAge.forEach((value) => {
+                    arrAge_id.push(value.id);   
+                              
+                });
+                where.age = {[Sequelize.Op.in]:arrAge_id};
+            
             }
+            if(query.city != undefined)
+            { 
             if( Pieces.VariableBaseTypeChecking(query.city, 'string') ){
                 where.city = query.city;
             }
-            if( Pieces.VariableBaseTypeChecking(query.condition, 'string') ){
-                where.condition = query.condition;
-            }     
+            }
+            if(query.condition != undefined)
+            {
+                if( Pieces.VariableBaseTypeChecking(query.condition, 'string') ){
+                    where.condition = query.condition;
+                }    
+            } 
             
             if(query.category != undefined)
             {
@@ -158,7 +177,6 @@ module.exports = {
             let k;
             if(query.tag != undefined)
             {
-                console.log(query.tag);
                 where_tag_toy.tag = query.tag;
                 k=true;
             }

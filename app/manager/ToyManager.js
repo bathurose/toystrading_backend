@@ -137,15 +137,16 @@ module.exports = {
                     where.sex = query.sex;
                 }
             }
-            let arrAge_id=[];
+            // let arrAge_id=[];
             if(query.age != undefined)
             { 
-                let arrAge = JSON.parse( JSON.stringify(query.age));
-                arrAge.forEach((value) => {
-                    arrAge_id.push(value.id);   
+                // let arrAge = JSON.parse( JSON.stringify(query.age));
+                // arrAge.forEach((value) => {
+                //     arrAge_id.push(value.id);   
                               
-                });
-                where.age = {[Sequelize.Op.in]:arrAge_id};
+                // });
+                // where.age = {[Sequelize.Op.in]:arrAge_id};
+                where.age = {[Sequelize.Op.in]:query.age};
             
             }
             if(query.city != undefined)

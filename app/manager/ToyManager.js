@@ -163,7 +163,7 @@ module.exports = {
             
             if(query.category != undefined)
             {
-                where.category = query.category;
+                where.categoryid = query.category;
             }
             if((query.min != undefined) && (query.max != undefined) )
             {

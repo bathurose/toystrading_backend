@@ -558,7 +558,7 @@ module.exports = {
             queryObj.condition = toyData.condition;
            
             queryObj.description = toyData.description
-            queryObj.category = toyData.category;
+            queryObj.categoryid = toyData.category;
             queryObj.updatedAt = new Date();
            
             where.id = toyId;  

@@ -40,8 +40,8 @@ module.exports = {
             if (errorCode) {
                 return Rest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
             }
-            // return Rest.sendSuccessOne(res, "CHANGE PASSWORD SUCCESS", httpCode);
-            return res.redirect(__basedir + "/public/docs/change_pw.html")        
+            return Rest.sendSuccessOne(res, "CHANGE PASSWORD SUCCESS", httpCode);
+            
         })
         
         

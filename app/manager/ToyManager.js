@@ -65,7 +65,7 @@ module.exports = {
             queryObj.ecoin = toyData.ecoin;
             queryObj.description = toyData.description;
             queryObj.status = "READY";
-            queryObj.categoryid = toyData.category;
+            queryObj.category = toyData.category;
     
             queryObj.createdBy = accessUserId;
             queryObj.updatedBy = accessUserId;   

@@ -73,7 +73,7 @@ module.exports = {
                 return callback(1, 'invalid_user_type', 400, null, null);
             }
             User.count({
-                where:{},
+                where:{ type:1},
             }).then(function(total){ // giống trên 
                 "use strict";
                 final.total = total;
